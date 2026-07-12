@@ -13,8 +13,10 @@ export interface ToolData {
   title: string;
   type: ToolType;
   description: string | null;
-  tags?: string[];
-  markdownContent?: string | null;
+  tags: string[];
+  markdownContent: string | null;
+  createdAt: string;
+  updatedAt: string;
 }
 
 const glowMap = {

@@ -36,7 +36,8 @@ export async function getTools(): Promise<Tool[]> {
     const rows = await prisma.tool.findMany({
       orderBy: { createdAt: "desc" }
     });
-    return rows.map(r => ({
+    return rows.map((r: any) => // eslint-disable-line @typescript-eslint/no-explicit-any
+   ({
       id: r.id,
       title: r.title,
       type: r.type,
@@ -234,7 +235,8 @@ export async function getApiKeys(): Promise<ApiKey[]> {
     const rows = await prisma.apiKey.findMany({
       orderBy: { createdAt: "desc" }
     });
-    return rows.map(r => ({
+    return rows.map((r: any) => // eslint-disable-line @typescript-eslint/no-explicit-any
+   ({
       id: r.id,
       name: r.name,
       prefix: r.prefix,
