@@ -44,7 +44,7 @@ export function CanvasTab({
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: 20 }}
-      transition={{ duration: 0.25 }}
+      transition={{ duration: 0.5 }}
       className="flex-grow flex flex-col gap-4 overflow-hidden h-full min-h-0"
     >
       {/* Search Bar - In document flow */}
@@ -81,7 +81,7 @@ export function CanvasTab({
               layout
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ type: "spring", stiffness: 300, damping: 28 }}
+              transition={{ type: "spring", stiffness: 80, damping: 18 }}
               className="flex-shrink-0 flex flex-col justify-between items-center text-left h-full min-h-0 pb-1"
             >
               {/* The fully expanded ToolCard */}
@@ -118,7 +118,7 @@ export function CanvasTab({
               }}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 0.05, duration: 0.3 }}
+              transition={{ delay: 0.05, duration: 0.6 }}
               className="flex-grow h-full min-h-0 overflow-x-auto overflow-y-hidden"
             >
               <div

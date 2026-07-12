@@ -199,8 +199,8 @@ export function ToolCard({
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95 }}
         transition={{ 
-          layout: { type: "spring", stiffness: 65, damping: 16 },
-          opacity: { duration: 0.3 }
+          layout: { type: "spring", stiffness: 30, damping: 12 },
+          opacity: { duration: 0.6 }
         }}
         className={`
           relative flex flex-col justify-between
@@ -421,11 +421,11 @@ export function ToolCard({
       }}
       exit={{ opacity: 0, scale: 0.5 }}
       transition={{ 
-        layout: { type: "spring", stiffness: 65, damping: 16 },
-        opacity: { duration: 0.75, ease: "easeInOut", delay },
-        scale: { type: "spring", stiffness: 120, damping: 18, delay },
-        y: { type: "spring", stiffness: 120, damping: 18, delay },
-        filter: { duration: 0.5, delay }
+        layout: { type: "spring", stiffness: 30, damping: 12 },
+        opacity: { duration: 1.5, ease: "easeInOut", delay },
+        scale: { type: "spring", stiffness: 50, damping: 14, delay },
+        y: { type: "spring", stiffness: 50, damping: 14, delay },
+        filter: { duration: 1.0, delay }
       }}
       onClick={onClick}
       onMouseEnter={() => setIsHovered(true)}
