@@ -12,11 +12,7 @@ jobs:
 
     strategy:
       matrix:
-<<<<<<< HEAD
-        node-version: [18.x, 20.x, 22.x]
-=======
         node-version: [22.x]
->>>>>>> e6e3fcaf65e8b8ebf39aecc3e573066aef2c4f0f
 
     steps:
     - uses: actions/checkout@v4
@@ -29,8 +25,4 @@ jobs:
     - name: Build
       run: |
         npm install
-<<<<<<< HEAD
-        npx webpack
-=======
         npm run build
->>>>>>> e6e3fcaf65e8b8ebf39aecc3e573066aef2c4f0f
