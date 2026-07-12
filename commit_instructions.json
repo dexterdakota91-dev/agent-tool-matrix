@@ -1,6 +1,0 @@
-{
-  "branch_name": "fix-nextjs-16-type-errors",
-  "commit_message": "fix: Next.js 16 build type errors for ToolData and prisma return types",
-  "title": "Fix Next.js 16 type errors for ToolData and Prisma return types",
-  "description": "Resolved Next.js 16 build errors caused by missing strict typings.\n\nChanges made:\n- Added required `createdAt` and `updatedAt` string fields to the `ToolData` interface in `src/components/ToolCard.tsx`.\n- Changed `tags` and `markdownContent` to strictly match the API schema instead of being optional.\n- Fixed implicit `any` type mappings for Prisma result rows returned by `getTools` and `getApiKeys` in `src/app/actions.ts`.\n\nThe application now successfully completes the Next.js `build` and `lint` pipeline without emitting any errors."
-}
