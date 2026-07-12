@@ -1,0 +1,66 @@
+generator client {
+  provider   = "prisma-client-js"
+  engineType = "library"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ToolType {
+  prompt
+  skill
+  mcp
+}
+
+model Tool {
+  id              String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title           String
+  type            ToolType
+  description     String?
+  markdownContent String?
+  tags            String[]       @default([])
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  workflows       WorkflowTool[]
+
+  @@index([type])
+  @@map("tools")
+}
+
+model Workflow {
+  id          String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title       String
+  description String?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  tools       WorkflowTool[]
+
+  @@map("workflows")
+}
+
+model WorkflowTool {
+  workflowId String   @db.Uuid
+  toolId     String   @db.Uuid
+  stepOrder  Int
+  createdAt  DateTime @default(now())
+
+  workflow Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  tool     Tool     @relation(fields: [toolId], references: [id], onDelete: Cascade)
+
+  @@id([workflowId, stepOrder])
+  @@index([workflowId])
+  @@map("workflow_tools")
+}
+
+model ApiKey {
+  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name      String
+  hash      String    @unique
+  prefix    String
+  createdAt DateTime  @default(now())
+  lastUsed  DateTime?
+  active    Boolean   @default(true)
+
+  @@map("api_keys")
+}
