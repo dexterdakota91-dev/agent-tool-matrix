@@ -1,5 +1,18 @@
 import { PrismaClient } from '@prisma/client';
-const prisma = new PrismaClient();
+import { neonConfig } from '@neondatabase/serverless';
+import { PrismaNeon } from '@prisma/adapter-neon';
+import ws from 'ws';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+neonConfig.webSocketConstructor = ws;
+const connectionString = (process.env.DATABASE_URL_UNPOOLED || process.env.DATABASE_URL || "")
+  .replace(/^\uFEFF/, "")
+  .replace(/channel_binding=require&?/g, "")
+  .trim();
+const adapter = new PrismaNeon({ connectionString });
+const prisma = new PrismaClient({ adapter });
 
 const seedData = [
   // ==========================================
