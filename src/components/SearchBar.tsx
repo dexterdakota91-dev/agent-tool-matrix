@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Search } from "lucide-react";
+import { Search, X } from "lucide-react";
 import { useCanvasStore } from "@/store/useCanvasStore";
 
 export function SearchBar() {
@@ -34,8 +34,18 @@ export function SearchBar() {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Search Tools, Skills, Connectors, or by #tag"
+          aria-label="Search query"
           className="bg-transparent border-none outline-none w-full text-xs placeholder:text-foreground/40 text-foreground min-w-0"
         />
+        {searchQuery && (
+          <button
+            onClick={() => setSearchQuery("")}
+            aria-label="Clear search"
+            className="p-1 rounded-full hover:bg-black/10 dark:hover:bg-white/10 text-foreground/50 hover:text-foreground transition-colors flex-shrink-0 cursor-pointer"
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
+        )}
       </div>
     </div>
   );
