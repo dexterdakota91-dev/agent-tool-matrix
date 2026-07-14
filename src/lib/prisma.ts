@@ -19,7 +19,6 @@ if (globalForPrisma.prisma) {
     .replace(/channel_binding=require&?/g, "")
     .replace(/^[\\\"\']+|[\\\"\']+$/g, "")
     .trim();
-  console.log("RESOLVED CONNECTION STRING FOR PRISMA:", JSON.stringify(connectionString));
   process.env.DATABASE_URL = connectionString;
   process.env.DATABASE_URL_UNPOOLED = connectionString;
 
