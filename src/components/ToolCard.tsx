@@ -236,8 +236,9 @@ export function ToolCard({
           {onClick && (
             <button
               onClick={onClick}
-              className="text-foreground/50 hover:text-foreground hover:bg-white/10 p-1.5 rounded-lg transition-colors cursor-pointer"
+              className="text-foreground/50 hover:text-foreground hover:bg-white/10 p-1.5 rounded-lg transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-white/30"
               title="Clear Selection"
+              aria-label="Close details"
             >
               <X className="w-4 h-4" />
             </button>
@@ -353,7 +354,8 @@ export function ToolCard({
                         <button
                           key={tag}
                           onClick={() => useCanvasStore.getState().setSearchQuery(`#${tag}`)}
-                          className="text-[9px] px-2 py-0.5 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 hover:border-white/20 transition-all text-zinc-300 cursor-pointer"
+                          className="text-[9px] px-2 py-0.5 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 hover:border-white/20 transition-all text-zinc-300 cursor-pointer focus-visible:ring-2 focus-visible:ring-white/30"
+                          aria-label={`Filter by tag ${tag}`}
                         >
                           #{tag}
                         </button>
@@ -389,8 +391,9 @@ export function ToolCard({
           {userRole === "Admin" && !isInBuilder && onEdit && (
             <button
               onClick={onEdit}
-              className="p-1.5 rounded-lg border border-white/15 bg-white/5 hover:bg-white/10 text-foreground transition-all active:scale-95 cursor-pointer"
+              className="p-1.5 rounded-lg border border-white/15 bg-white/5 hover:bg-white/10 text-foreground transition-all active:scale-95 cursor-pointer focus-visible:ring-2 focus-visible:ring-white/30"
               title="Edit Tool"
+              aria-label="Edit tool"
             >
               <Edit className="w-3.5 h-3.5" />
             </button>
@@ -398,8 +401,9 @@ export function ToolCard({
           {userRole === "Admin" && !isInBuilder && onDelete && (
             <button
               onClick={onDelete}
-              className="p-1.5 rounded-lg border border-red-500/30 bg-red-600/10 hover:bg-red-600/20 text-red-400 transition-all active:scale-95 cursor-pointer"
+              className="p-1.5 rounded-lg border border-red-500/30 bg-red-600/10 hover:bg-red-600/20 text-red-400 transition-all active:scale-95 cursor-pointer focus-visible:ring-2 focus-visible:ring-red-500/50"
               title="Delete"
+              aria-label="Delete tool"
             >
               <Trash2 className="w-3.5 h-3.5" />
             </button>
@@ -430,6 +434,15 @@ export function ToolCard({
         filter: { duration: 1.0, delay }
       }}
       onClick={onClick}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onClick?.();
+        }
+      }}
+      role="button"
+      tabIndex={onClick ? 0 : -1}
+      aria-label={`Select tool ${tool.title}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       className={`
@@ -440,6 +453,7 @@ export function ToolCard({
         flex flex-col justify-between
         w-full ${heightClass}
         ${borderMap[tool.type]}
+        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30
       `}
       style={{
         boxShadow: shadowStyle
