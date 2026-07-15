@@ -73,19 +73,20 @@ interface ToolCardProps {
   onRemoveFromCart?: () => void;
 }
 
-export function ToolCard({
+export const ToolCard = React.memo(function ToolCard({
   tool, delay = 0, onClick, isSelected = false,
   relevanceScore, isInBuilder = false, onAddToPipeline,
   isDirectMatch, isRelatedMatch, userRole = "Guest", onEdit, onDelete,
   isAddedToCart = false, onAddToCart, onRemoveFromCart
 }: ToolCardProps) {
-  const searchQuery = useCanvasStore((state) => state.searchQuery);
   const [isHovered, setIsHovered] = React.useState(false);
   const [activeTab, setActiveTab] = React.useState<"description" | "implementation" | "schema">("description");
   const [copied, setCopied] = React.useState(false);
 
-  // Determine visual state from search
-  const hasSearch = searchQuery.trim().length > 0;
+  // ⚡ Bolt Optimization: Removed O(N) Zustand subscriptions.
+  // ToolCard now infers search state from props, preventing hundreds of
+  // store listeners from triggering simultaneously on every keystroke.
+  const hasSearch = isDirectMatch !== undefined;
 
   // Hover only triggers expansion if card is not filtered out
   const isUnmatched = hasSearch && isDirectMatch === false && isRelatedMatch === false;
@@ -488,4 +489,14 @@ export function ToolCard({
     </div>
   </motion.div>
   );
-}
+}, (prev, next) => (
+  // ⚡ Bolt Optimization: Custom comparator to ignore inline function props
+  prev.tool === next.tool &&
+  prev.isSelected === next.isSelected &&
+  prev.isDirectMatch === next.isDirectMatch &&
+  prev.isRelatedMatch === next.isRelatedMatch &&
+  prev.isAddedToCart === next.isAddedToCart &&
+  prev.relevanceScore === next.relevanceScore &&
+  prev.userRole === next.userRole &&
+  prev.isInBuilder === next.isInBuilder
+));

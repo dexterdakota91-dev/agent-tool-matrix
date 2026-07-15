@@ -1,3 +1,3 @@
-## 2024-07-13 - [Memoization in CanvasTab]
-**Learning:** Found complex inline filtering and O(N log N) sorting logic nested inside JSX being triggered on every render due to non-memoization of state changes.
-**Action:** Extract expensive logic into `useMemo` hooks so they only re-run when their dependency array updates.
+## 2024-05-24 - [Avoid Direct Zustand Subscriptions in List Items]
+**Learning:** [In a list component with many items (like ToolCard in a grid), subscribing directly to rapidly changing Zustand state (like searchQuery) causes all list items to re-render simultaneously on every keystroke, causing severe performance bottlenecks during typing/filtering.]
+**Action:** [Derive the required state based on other props passed from the parent (which handles filtering) and use React.memo to prevent unnecessary re-renders. Use custom comparators in React.memo when parent passes inline functions, though be aware of potential stale closure risks.]
