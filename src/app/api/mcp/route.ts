@@ -82,6 +82,7 @@ export async function POST(request: Request) {
       const message = "event: message\ndata: " + JSON.stringify(responseJson) + "\n\n";
       try {
         controller.enqueue(new TextEncoder().encode(message));
+        controller.close();
       } catch (err) {
         console.error("[MCP] Failed to send message to client " + connectionId + ":", err);
         clients.delete(connectionId);
@@ -97,6 +98,7 @@ export async function POST(request: Request) {
       const message = "event: message\ndata: " + JSON.stringify(errorResponse) + "\n\n";
       try {
         controller.enqueue(new TextEncoder().encode(message));
+        controller.close();
       } catch {}
     });
 
