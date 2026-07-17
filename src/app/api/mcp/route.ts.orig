@@ -33,9 +33,11 @@ export async function GET(request: Request) {
       const endpointMsg = "event: endpoint\ndata: " + url.pathname + "?connectionId=" + connectionId + "\n\n";
       controller.enqueue(new TextEncoder().encode(endpointMsg));
 
+      console.log("[MCP] Client connected: " + connectionId);
     },
     cancel() {
       clients.delete(connectionId);
+      console.log("[MCP] Client disconnected: " + connectionId);
     }
   });
 
@@ -111,25 +113,6 @@ interface McpParams {
   arguments?: Record<string, unknown>;
 }
 
-function handleInitialize(id: string | number | null | undefined): Record<string, unknown> {
-  return {
-    jsonrpc: "2.0",
-    id,
-    result: {
-      protocolVersion: "2024-11-05",
-      capabilities: {
-        tools: {},
-        resources: {},
-        prompts: {}
-      },
-      serverInfo: {
-        name: "Agent Tool Matrix (ATM)",
-        version: "1.0.0"
-      }
-    }
-  };
-}
-
 async function processMcpRequest(
   method: string,
   params: McpParams | undefined,
@@ -138,7 +121,22 @@ async function processMcpRequest(
 
   switch (method) {
     case "initialize":
-      return handleInitialize(id);
+      return {
+        jsonrpc: "2.0",
+        id,
+        result: {
+          protocolVersion: "2024-11-05",
+          capabilities: {
+            tools: {},
+            resources: {},
+            prompts: {}
+          },
+          serverInfo: {
+            name: "Agent Tool Matrix (ATM)",
+            version: "1.0.0"
+          }
+        }
+      };
 
     case "tools/list":
       try {
@@ -178,9 +176,9 @@ async function processMcpRequest(
         if (!name) throw new Error("Missing tool name");
         const args = params?.arguments || {};
 
-        // Optimization: Fetch only id and title for in-memory filtering, then query full object
-        const dbTools = await prisma.tool.findMany({ select: { id: true, title: true } });
-        const match = dbTools.find(t => normalizeName(t.title) === name);
+        // Fetch only id and title for matching to reduce memory footprint
+        const partialTools = await prisma.tool.findMany({ select: { id: true, title: true } });
+        const match = partialTools.find(t => normalizeName(t.title) === name);
         if (!match) throw new Error("Tool not found");
 
         const tool = await prisma.tool.findUnique({ where: { id: match.id } });
@@ -299,16 +297,11 @@ async function processMcpRequest(
         const name = params?.name;
         if (!name) throw new Error("Missing prompt name");
 
-        // Optimization: Fetch only id and title for in-memory filtering, then query full object
         const dbTools = await prisma.tool.findMany({
-          where: { type: "prompt" },
-          select: { id: true, title: true }
+          where: { type: "prompt" }
         });
 
-        const match = dbTools.find(t => normalizeName(t.title) === name);
-        if (!match) throw new Error("Prompt not found");
-
-        const tool = await prisma.tool.findUnique({ where: { id: match.id } });
+        const tool = dbTools.find(t => normalizeName(t.title) === name);
         if (!tool) throw new Error("Prompt not found");
 
         return {
