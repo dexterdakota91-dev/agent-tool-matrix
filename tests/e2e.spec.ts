@@ -69,7 +69,7 @@ test.describe('Agent Tool Matrix E2E Test Suite', () => {
 
   test('Pipeline Builder and Saving Workflow', async ({ page }) => {
     // 1. Navigate to Builder tab
-    const builderTab = page.getByRole('button', { name: 'Builder' });
+    const builderTab = page.getByRole('button', { name: 'Pipeline Builder' });
     await builderTab.click();
 
     // 2. Add Git Conflict Resolver to Pipeline from the side node list
