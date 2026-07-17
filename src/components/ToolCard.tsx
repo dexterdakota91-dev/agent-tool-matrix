@@ -71,22 +71,19 @@ interface ToolCardProps {
   isAddedToCart?: boolean;
   onAddToCart?: () => void;
   onRemoveFromCart?: () => void;
+  hasSearch?: boolean; // ⚡ Bolt Optimization: Passed down from parent instead of reading Zustand store directly
 }
 
-export const ToolCard = React.memo(function ToolCard({
+function ToolCardInner({
   tool, delay = 0, onClick, isSelected = false,
   relevanceScore, isInBuilder = false, onAddToPipeline,
   isDirectMatch, isRelatedMatch, userRole = "Guest", onEdit, onDelete,
-  isAddedToCart = false, onAddToCart, onRemoveFromCart
+  isAddedToCart = false, onAddToCart, onRemoveFromCart,
+  hasSearch = false
 }: ToolCardProps) {
   const [isHovered, setIsHovered] = React.useState(false);
   const [activeTab, setActiveTab] = React.useState<"description" | "implementation" | "schema">("description");
   const [copied, setCopied] = React.useState(false);
-
-  // ⚡ Bolt Optimization: Removed O(N) Zustand subscriptions.
-  // ToolCard now infers search state from props, preventing hundreds of
-  // store listeners from triggering simultaneously on every keystroke.
-  const hasSearch = isDirectMatch !== undefined;
 
   // Hover only triggers expansion if card is not filtered out
   const isUnmatched = hasSearch && isDirectMatch === false && isRelatedMatch === false;
@@ -489,14 +486,23 @@ export const ToolCard = React.memo(function ToolCard({
     </div>
   </motion.div>
   );
-}, (prev, next) => (
-  // ⚡ Bolt Optimization: Custom comparator to ignore inline function props
-  prev.tool === next.tool &&
-  prev.isSelected === next.isSelected &&
-  prev.isDirectMatch === next.isDirectMatch &&
-  prev.isRelatedMatch === next.isRelatedMatch &&
-  prev.isAddedToCart === next.isAddedToCart &&
-  prev.relevanceScore === next.relevanceScore &&
-  prev.userRole === next.userRole &&
-  prev.isInBuilder === next.isInBuilder
-));
+}
+
+// ⚡ Bolt Optimization: Memoize the ToolCard component to prevent unnecessary re-renders
+// when the parent component re-renders (e.g. due to rapidly changing search query).
+// We implement a custom comparator that ignores inline function props to make this effective.
+export const ToolCard = React.memo(ToolCardInner, (prevProps, nextProps) => {
+  return (
+    prevProps.tool.id === nextProps.tool.id &&
+    prevProps.tool.updatedAt === nextProps.tool.updatedAt &&
+    prevProps.delay === nextProps.delay &&
+    prevProps.isSelected === nextProps.isSelected &&
+    prevProps.relevanceScore === nextProps.relevanceScore &&
+    prevProps.isInBuilder === nextProps.isInBuilder &&
+    prevProps.isDirectMatch === nextProps.isDirectMatch &&
+    prevProps.isRelatedMatch === nextProps.isRelatedMatch &&
+    prevProps.userRole === nextProps.userRole &&
+    prevProps.isAddedToCart === nextProps.isAddedToCart &&
+    prevProps.hasSearch === nextProps.hasSearch
+  );
+});
