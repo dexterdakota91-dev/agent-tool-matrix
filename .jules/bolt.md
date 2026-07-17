@@ -7,3 +7,7 @@
 ## 2024-07-14 - Search Debouncing and State Management
 **Learning:** Updating a global store state (Zustand) directly on every keystroke causes extensive cascading re-renders across the entire Next.js application, resulting in severe performance lag. Additionally, using `useEffect` to sync external state updates can trigger React linter warnings and further cascading renders.
 **Action:** When connecting frequently updating text inputs to a global state store, always implement a local debounced state. To handle external updates (e.g. clicking a tag to search), use the pattern of checking and syncing state directly during render (e.g., `if (searchQuery !== lastGlobalQuery) { setLocalQuery(searchQuery); setLastGlobalQuery(searchQuery); }`) rather than relying on `useEffect`.
+
+## 2024-05-24 - MCP Route Query Optimization
+**Learning:** Adding caching for MCP tools using Next.js unstable_cache significantly speeds up frequent redundant queries, reducing time taken over 20 concurrent calls from >850ms down to ~40ms.
+**Action:** Always check if repetitive database query endpoints can be easily wrapped inside Next.js unstable_cache or React cache if the data is infrequently modified and highly read-heavy.

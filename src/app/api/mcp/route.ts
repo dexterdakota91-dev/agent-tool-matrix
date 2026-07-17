@@ -1,3 +1,4 @@
+import { unstable_cache } from "next/cache";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { validateApiKey } from "@/lib/auth-api";
@@ -113,6 +114,7 @@ interface McpParams {
   arguments?: Record<string, unknown>;
 }
 
+
 async function processMcpRequest(
   method: string,
   params: McpParams | undefined,
@@ -140,8 +142,8 @@ async function processMcpRequest(
 
     case "tools/list":
       try {
-        // Fetch all tools from database
-        const dbTools = await prisma.tool.findMany();
+        // Fetch all tools from cache
+        const dbTools = await unstable_cache(async () => await prisma.tool.findMany(), ["mcp-tools-list"], { revalidate: 60, tags: ["tools"] })();
 
         // Expose prompt and connector tools as executable schemas (or skills run locally)
         const mcpTools = dbTools.map((tool) => ({
@@ -176,7 +178,7 @@ async function processMcpRequest(
         if (!name) throw new Error("Missing tool name");
         const args = params?.arguments || {};
 
-        const dbTools = await prisma.tool.findMany();
+        const dbTools = await unstable_cache(async () => await prisma.tool.findMany(), ["mcp-tools-list"], { revalidate: 60, tags: ["tools"] })();
         const tool = dbTools.find(t => normalizeName(t.title) === name);
         if (!tool) throw new Error("Tool not found");
 
@@ -208,7 +210,7 @@ async function processMcpRequest(
 
     case "resources/list":
       try {
-        const dbTools = await prisma.tool.findMany();
+        const dbTools = await unstable_cache(async () => await prisma.tool.findMany(), ["mcp-tools-list"], { revalidate: 60, tags: ["tools"] })();
 
         // Expose Prompt & Skill files as resources for ingestion
         const mcpResources = dbTools
@@ -263,9 +265,7 @@ async function processMcpRequest(
 
     case "prompts/list":
       try {
-        const dbTools = await prisma.tool.findMany({
-          where: { type: "prompt" }
-        });
+        const dbTools = await unstable_cache(async () => await prisma.tool.findMany({ where: { type: "prompt" } }), ["mcp-prompts-list"], { revalidate: 60, tags: ["tools"] })();
 
         const mcpPrompts = dbTools.map((tool) => ({
           name: normalizeName(tool.title),
@@ -293,9 +293,7 @@ async function processMcpRequest(
         const name = params?.name;
         if (!name) throw new Error("Missing prompt name");
 
-        const dbTools = await prisma.tool.findMany({
-          where: { type: "prompt" }
-        });
+        const dbTools = await unstable_cache(async () => await prisma.tool.findMany({ where: { type: "prompt" } }), ["mcp-prompts-list"], { revalidate: 60, tags: ["tools"] })();
 
         const tool = dbTools.find(t => normalizeName(t.title) === name);
         if (!tool) throw new Error("Prompt not found");
