@@ -113,6 +113,25 @@ interface McpParams {
   arguments?: Record<string, unknown>;
 }
 
+function handleInitialize(id: string | number | null | undefined): Record<string, unknown> {
+  return {
+    jsonrpc: "2.0",
+    id,
+    result: {
+      protocolVersion: "2024-11-05",
+      capabilities: {
+        tools: {},
+        resources: {},
+        prompts: {}
+      },
+      serverInfo: {
+        name: "Agent Tool Matrix (ATM)",
+        version: "1.0.0"
+      }
+    }
+  };
+}
+
 async function processMcpRequest(
   method: string,
   params: McpParams | undefined,
@@ -121,22 +140,7 @@ async function processMcpRequest(
 
   switch (method) {
     case "initialize":
-      return {
-        jsonrpc: "2.0",
-        id,
-        result: {
-          protocolVersion: "2024-11-05",
-          capabilities: {
-            tools: {},
-            resources: {},
-            prompts: {}
-          },
-          serverInfo: {
-            name: "Agent Tool Matrix (ATM)",
-            version: "1.0.0"
-          }
-        }
-      };
+      return handleInitialize(id);
 
     case "tools/list":
       try {
