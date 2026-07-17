@@ -18,7 +18,6 @@ if (globalForPrisma.prisma) {
     .replace(/channel_binding=require&?/g, "")
     .replace(/^[\\\"\']+|[\\\"\']+$/g, "")
     .trim();
-  // Security: Do not console.log connection string or env vars
   process.env.DATABASE_URL = connectionString;
   process.env.DATABASE_URL_UNPOOLED = connectionString;
 
