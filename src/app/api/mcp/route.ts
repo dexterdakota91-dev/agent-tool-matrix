@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { validateApiKey } from "@/lib/auth-api";
 import crypto from "crypto";
+import { unstable_cache } from "next/cache";
 
 // In-memory store for active SSE client connections (works for local development and single-server environments)
 const clients = new Map<string, ReadableStreamDefaultController>();
@@ -10,6 +11,40 @@ const clients = new Map<string, ReadableStreamDefaultController>();
 function normalizeName(title: string): string {
   return title.replace(/[^a-zA-Z0-9_-]/g, "_").toLowerCase();
 }
+
+
+// Caching wrappers to reduce duplicate heavy db calls over frequent polling via SSE connection
+const getCachedAllTools = unstable_cache(
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async () => {
+    const data = await prisma.tool.findMany({ select: { id: true, title: true, type: true, description: true, markdownContent: true } });
+    return data.map(d => ({...d, createdAt: undefined, updatedAt: undefined}));
+  },
+  ['all-tools'],
+  { tags: ['tools'], revalidate: 60 }
+);
+
+const getCachedPartialTools = unstable_cache(
+  async () => prisma.tool.findMany({ select: { id: true, title: true } }),
+  ['partial-tools'],
+  { tags: ['tools'], revalidate: 60 }
+);
+
+const getCachedPromptTools = unstable_cache(
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async () => {
+    const data = await prisma.tool.findMany({ where: { type: "prompt" }, select: { id: true, title: true, type: true, description: true, markdownContent: true } });
+    return data.map(d => ({...d, createdAt: undefined, updatedAt: undefined}));
+  },
+  ['prompt-tools'],
+  { tags: ['tools'], revalidate: 60 }
+);
+
+const getCachedPartialPromptTools = unstable_cache(
+  async () => prisma.tool.findMany({ where: { type: "prompt" }, select: { id: true, title: true } }),
+  ['partial-prompt-tools'],
+  { tags: ['tools'], revalidate: 60 }
+);
 
 export async function GET(request: Request) {
   // 1. Authenticate connection
@@ -143,7 +178,7 @@ async function processMcpRequest(
     case "tools/list":
       try {
         // Fetch all tools from database
-        const dbTools = await prisma.tool.findMany();
+        const dbTools = await getCachedAllTools();
 
         // Expose prompt and connector tools as executable schemas (or skills run locally)
         const mcpTools = dbTools.map((tool) => ({
@@ -179,7 +214,7 @@ async function processMcpRequest(
         const args = params?.arguments || {};
 
         // Fetch only id and title for matching to reduce memory footprint
-        const partialTools = await prisma.tool.findMany({ select: { id: true, title: true } });
+        const partialTools = await getCachedPartialTools();
         const match = partialTools.find(t => normalizeName(t.title) === name);
         if (!match) throw new Error("Tool not found");
 
@@ -214,7 +249,7 @@ async function processMcpRequest(
 
     case "resources/list":
       try {
-        const dbTools = await prisma.tool.findMany();
+        const dbTools = await getCachedAllTools();
 
         // Expose Prompt & Skill files as resources for ingestion
         const mcpResources = dbTools
@@ -269,9 +304,7 @@ async function processMcpRequest(
 
     case "prompts/list":
       try {
-        const dbTools = await prisma.tool.findMany({
-          where: { type: "prompt" }
-        });
+        const dbTools = await getCachedPromptTools();
 
         const mcpPrompts = dbTools.map((tool) => ({
           name: normalizeName(tool.title),
@@ -300,10 +333,7 @@ async function processMcpRequest(
         if (!name) throw new Error("Missing prompt name");
 
         // Fetch only id and title for matching to reduce memory footprint
-        const partialTools = await prisma.tool.findMany({
-          where: { type: "prompt" },
-          select: { id: true, title: true }
-        });
+        const partialTools = await getCachedPartialPromptTools();
 
         const match = partialTools.find(t => normalizeName(t.title) === name);
         if (!match) throw new Error("Prompt not found");

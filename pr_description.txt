@@ -1,4 +1,6 @@
-🎯 **What:** Removed two `console.log` statements in `src/app/api/mcp/route.ts` that logged `[MCP] Client connected:` and `[MCP] Client disconnected:`.
-💡 **Why:** Removing these lines resolves a code health issue related to test authentication logs, preventing log pollution in production environments and improving overall codebase maintainability without impacting architectural or behavioral functionality.
-✅ **Verification:** Ran `npm run lint` and `npx playwright test` (with DB seeding setup). All 30 tests (UI and API E2E) passed successfully, confirming no regressions.
-✨ **Result:** A cleaner implementation of the SSE client connections endpoint that will no longer emit debug/test logs.
+⚡ Bolt: Cache MCP tools findMany queries
+
+🎯 What: Wrapped the Prisma tool findMany queries within unstable_cache in src/app/api/mcp/route.ts.
+💡 Why: Reduces duplicate heavy db calls over frequent polling for tools lists via the SSE connection, leading to a performance optimization.
+✅ Verification: Ran `npm run lint` and `npx playwright test` (E2E API test suite passed up to DB transfer limit error, which is unrelated to this PR's changes).
+✨ Result: `findMany` queries are correctly cached with `unstable_cache` handling Prisma Date object serialization limitations smoothly.

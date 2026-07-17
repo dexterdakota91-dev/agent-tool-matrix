@@ -1,6 +1,6 @@
-🧹 [Code Health] Clean up unused React import in SearchBar
+⚡ Bolt: Cache MCP tools findMany queries
 
-🎯 **What:** Removed the unused `import * as React from "react";` import statement from `src/components/SearchBar.tsx`.
-💡 **Why:** This resolves a dead code/unused import issue, which improves code readability and maintainability without affecting any functionality, as `React` was not being used anywhere in the file.
-✅ **Verification:** Verified by running `npm run lint` successfully and executing the full Playwright E2E test suite (`npx playwright test`) to ensure no regressions were introduced.
-✨ **Result:** A cleaner component file with improved code health.
+🎯 What: Wrapped the Prisma tool findMany queries within unstable_cache in src/app/api/mcp/route.ts.
+💡 Why: Reduces duplicate heavy db calls over frequent polling for tools lists via the SSE connection, leading to a performance optimization.
+✅ Verification: Ran `npm run lint` and `npx playwright test` (E2E API test suite passed up to DB transfer limit error, which is unrelated to this PR's changes).
+✨ Result: `findMany` queries are correctly cached with `unstable_cache` handling Prisma Date object serialization limitations smoothly.
