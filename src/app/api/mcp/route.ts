@@ -34,11 +34,9 @@ export async function GET(request: Request) {
       const endpointMsg = "event: endpoint\ndata: " + url.pathname + "?connectionId=" + connectionId + "\n\n";
       controller.enqueue(new TextEncoder().encode(endpointMsg));
 
-      console.log("[MCP] Client connected: " + connectionId);
     },
     cancel() {
       clients.delete(connectionId);
-      console.log("[MCP] Client disconnected: " + connectionId);
     }
   });
 
@@ -114,6 +112,24 @@ interface McpParams {
   arguments?: Record<string, unknown>;
 }
 
+function handleInitialize(id: string | number | null | undefined): Record<string, unknown> {
+  return {
+    jsonrpc: "2.0",
+    id,
+    result: {
+      protocolVersion: "2024-11-05",
+      capabilities: {
+        tools: {},
+        resources: {},
+        prompts: {}
+      },
+      serverInfo: {
+        name: "Agent Tool Matrix (ATM)",
+        version: "1.0.0"
+      }
+    }
+  };
+}
 
 async function processMcpRequest(
   method: string,
@@ -123,22 +139,7 @@ async function processMcpRequest(
 
   switch (method) {
     case "initialize":
-      return {
-        jsonrpc: "2.0",
-        id,
-        result: {
-          protocolVersion: "2024-11-05",
-          capabilities: {
-            tools: {},
-            resources: {},
-            prompts: {}
-          },
-          serverInfo: {
-            name: "Agent Tool Matrix (ATM)",
-            version: "1.0.0"
-          }
-        }
-      };
+      return handleInitialize(id);
 
     case "tools/list":
       try {
