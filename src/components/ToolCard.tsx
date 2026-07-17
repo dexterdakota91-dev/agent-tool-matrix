@@ -71,21 +71,19 @@ interface ToolCardProps {
   isAddedToCart?: boolean;
   onAddToCart?: () => void;
   onRemoveFromCart?: () => void;
+  hasSearch?: boolean; // ⚡ Bolt Optimization: Passed down from parent instead of reading Zustand store directly
 }
 
-export function ToolCard({
+function ToolCardInner({
   tool, delay = 0, onClick, isSelected = false,
   relevanceScore, isInBuilder = false, onAddToPipeline,
   isDirectMatch, isRelatedMatch, userRole = "Guest", onEdit, onDelete,
-  isAddedToCart = false, onAddToCart, onRemoveFromCart
+  isAddedToCart = false, onAddToCart, onRemoveFromCart,
+  hasSearch = false
 }: ToolCardProps) {
-  const searchQuery = useCanvasStore((state) => state.searchQuery);
   const [isHovered, setIsHovered] = React.useState(false);
   const [activeTab, setActiveTab] = React.useState<"description" | "implementation" | "schema">("description");
   const [copied, setCopied] = React.useState(false);
-
-  // Determine visual state from search
-  const hasSearch = searchQuery.trim().length > 0;
 
   // Hover only triggers expansion if card is not filtered out
   const isUnmatched = hasSearch && isDirectMatch === false && isRelatedMatch === false;
@@ -489,3 +487,22 @@ export function ToolCard({
   </motion.div>
   );
 }
+
+// ⚡ Bolt Optimization: Memoize the ToolCard component to prevent unnecessary re-renders
+// when the parent component re-renders (e.g. due to rapidly changing search query).
+// We implement a custom comparator that ignores inline function props to make this effective.
+export const ToolCard = React.memo(ToolCardInner, (prevProps, nextProps) => {
+  return (
+    prevProps.tool.id === nextProps.tool.id &&
+    prevProps.tool.updatedAt === nextProps.tool.updatedAt &&
+    prevProps.delay === nextProps.delay &&
+    prevProps.isSelected === nextProps.isSelected &&
+    prevProps.relevanceScore === nextProps.relevanceScore &&
+    prevProps.isInBuilder === nextProps.isInBuilder &&
+    prevProps.isDirectMatch === nextProps.isDirectMatch &&
+    prevProps.isRelatedMatch === nextProps.isRelatedMatch &&
+    prevProps.userRole === nextProps.userRole &&
+    prevProps.isAddedToCart === nextProps.isAddedToCart &&
+    prevProps.hasSearch === nextProps.hasSearch
+  );
+});
