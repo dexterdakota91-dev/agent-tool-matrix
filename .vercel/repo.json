@@ -1,0 +1,11 @@
+{
+  "remoteName": "origin",
+  "projects": [
+    {
+      "id": "prj_a5D7V5y9wa1Sa19eQfaCI0b1twec",
+      "name": "atm",
+      "directory": ".",
+      "orgId": "team_XTdOuTEHYwx8bRsEXbHsFjKd"
+    }
+  ]
+}
