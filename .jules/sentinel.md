@@ -1,4 +1,4 @@
-## 2023-11-20 - Add Next.js Security Headers
-**Vulnerability:** Missing default HTTP security headers.
-**Learning:** Next.js requires manual configuration of common security headers (like X-Frame-Options, X-Content-Type-Options) in next.config.ts using the async headers() function.
-**Prevention:** Include standard security header blocks in next.config.ts for all new Next.js projects as a baseline defense-in-depth measure.
+## 2025-02-15 - [Exposed Database Credentials in Prisma Initialization]
+**Vulnerability:** Found `console.log` statements in `src/lib/prisma.ts` that printed the raw `DATABASE_URL` and `process.env` keys starting with `DATA` or `NEON`. This exposes cleartext database connection strings (containing passwords and host info) to runtime logs, build output, or terminal output.
+**Learning:** This existed likely as a debugging mechanism to trace issues with Prisma connection strings and environment variables during deployment or initialization but was accidentally committed. It is a critical risk because build logs and server console logs are often ingested into central logging platforms accessible by many team members or potentially exposed publicly if logs leak.
+**Prevention:** Avoid using `console.log` to trace sensitive strings like connection URLs, API keys, or tokens. Rely on structured logging mechanisms that scrub sensitive data or strictly control debugging output via specific safe environment variables. Never print full environment variable strings or database credentials in cleartext anywhere in the codebase.

@@ -1,11 +1,32 @@
 "use client";
 
 import * as React from "react";
-import { Search } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Search, X } from "lucide-react";
 import { useCanvasStore } from "@/store/useCanvasStore";
 
 export function SearchBar() {
   const { searchQuery, setSearchQuery, selectedType, setSelectedType } = useCanvasStore();
+  const [localQuery, setLocalQuery] = useState(searchQuery);
+  const [lastGlobalQuery, setLastGlobalQuery] = useState(searchQuery);
+
+  // Sync external changes (e.g. tag clicks) to local state
+  // We use the pattern of checking during render to avoid useEffect cascading renders
+  if (searchQuery !== lastGlobalQuery) {
+    setLocalQuery(searchQuery);
+    setLastGlobalQuery(searchQuery);
+  }
+
+  // Debounce pushing local state to global store
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (searchQuery !== localQuery) {
+        setSearchQuery(localQuery);
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [localQuery, setSearchQuery, searchQuery]);
 
   return (
     <div className="w-full max-w-2xl mx-auto flex flex-col gap-2 px-2.5 py-2.5 rounded-2xl bg-white/5 dark:bg-black/35 backdrop-blur-md border border-white/10 shadow-lg z-50 relative">
@@ -31,11 +52,24 @@ export function SearchBar() {
         <Search className="w-4 h-4 opacity-50 flex-shrink-0" />
         <input
           type="text"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          value={localQuery}
+          onChange={(e) => setLocalQuery(e.target.value)}
           placeholder="Search Tools, Skills, Connectors, or by #tag"
+          aria-label="Search query"
           className="bg-transparent border-none outline-none w-full text-xs placeholder:text-foreground/40 text-foreground min-w-0"
         />
+        {localQuery && (
+          <button
+            onClick={() => {
+              setLocalQuery("");
+              setSearchQuery("");
+            }}
+            aria-label="Clear search"
+            className="p-1 rounded-full hover:bg-black/10 dark:hover:bg-white/10 text-foreground/50 hover:text-foreground transition-colors flex-shrink-0 cursor-pointer"
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
+        )}
       </div>
     </div>
   );

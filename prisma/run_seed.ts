@@ -2550,12 +2550,13 @@ async function main() {
   await sql`DELETE FROM tools`;
   console.log('Cleaned existing tools table.');
 
-  const insertQueries = seedData.map((tool) => sql`
-    INSERT INTO tools (title, type, description, "markdownContent", tags, "updatedAt")
-    VALUES (${tool.title}, ${tool.type}, ${tool.description}, ${tool.markdown_content}, ${tool.tags_array}, NOW())
-  `);
-
-  await sql.transaction(insertQueries);
+  // 1. Insert the high-quality base items
+  for (const tool of seedData) {
+    await sql`
+      INSERT INTO tools (title, type, description, "markdownContent", tags, "updatedAt")
+      VALUES (${tool.title}, ${tool.type}, ${tool.description}, ${tool.markdown_content}, ${tool.tags_array}, NOW())
+    `;
+  }
 
   console.log(`Database seeded successfully with ${seedData.length} unique items!`);
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Info, X } from "lucide-react";
 import { SearchBar } from "./SearchBar";
@@ -38,6 +39,35 @@ export function CanvasTab({
   directMatchIds,
   relatedMatchIds
 }: CanvasTabProps) {
+  const relevanceSortedTools = useMemo(() => {
+    if (!selectedTool) return [];
+
+    // ⚡ Bolt Optimization: Memoized expensive array mapping and sorting
+    // to prevent O(N log N) recalculations on every render.
+
+    // Sort remaining tools by relevance to selected tool
+    const selectedTags = new Set(selectedTool.tags || []);
+    const otherTools = filteredTools.filter((t) => t.id !== selectedTool.id);
+
+    const scored = otherTools.map((t) => {
+      let score = 0;
+      // Same type = base relevance
+      if (t.type === selectedTool.type) score += 0.3;
+      // Shared tags
+      const toolTags = t.tags || [];
+      const sharedCount = toolTags.filter((tag) => selectedTags.has(tag)).length;
+      if (selectedTags.size > 0 && toolTags.length > 0) {
+        score += (sharedCount / Math.max(selectedTags.size, 1)) * 0.7;
+      }
+      return { tool: t, score: Math.min(score, 1) };
+    });
+
+    // Sort: highest relevance first (leftmost = closest to selected card)
+    scored.sort((a, b) => b.score - a.score);
+
+    return scored;
+  }, [filteredTools, selectedTool]);
+
   return (
     <motion.div
       key="canvas"
@@ -96,6 +126,7 @@ export function CanvasTab({
                 isAddedToCart={cart.some((t) => t.id === selectedTool.id)}
                 onAddToCart={() => addToCart(selectedTool)}
                 onRemoveFromCart={() => removeFromCart(selectedTool.id)}
+                hasSearch={searchQuery.trim().length > 0}
               />
 
               {/* Fixed Clear Selection button at bottom */}
@@ -127,45 +158,24 @@ export function CanvasTab({
                 }}
                 className="grid grid-flow-col grid-rows-3 gap-3 auto-cols-max h-full min-h-0"
               >
-                {(() => {
-                  // Sort remaining tools by relevance to selected tool
-                  const selectedTags = new Set(selectedTool.tags || []);
-                  const otherTools = filteredTools.filter((t) => t.id !== selectedTool.id);
-
-                  const scored = otherTools.map((t) => {
-                    let score = 0;
-                    // Same type = base relevance
-                    if (t.type === selectedTool.type) score += 0.3;
-                    // Shared tags
-                    const toolTags = t.tags || [];
-                    const sharedCount = toolTags.filter((tag) => selectedTags.has(tag)).length;
-                    if (selectedTags.size > 0 && toolTags.length > 0) {
-                      score += (sharedCount / Math.max(selectedTags.size, 1)) * 0.7;
-                    }
-                    return { tool: t, score: Math.min(score, 1) };
-                  });
-
-                  // Sort: highest relevance first (leftmost = closest to selected card)
-                  scored.sort((a, b) => b.score - a.score);
-
-                  return scored.map(({ tool: t, score }) => (
-                    <div key={t.id} className="w-[175px]">
-                      <ToolCard
-                        tool={t}
-                        onClick={() => {
-                          setSelectedTool(t);
-                        }}
-                        relevanceScore={score > 0 ? score : 0.08}
-                        isDirectMatch={
-                          searchQuery.trim() ? directMatchIds.has(t.id) : undefined
-                        }
-                        isRelatedMatch={
-                          searchQuery.trim() ? relatedMatchIds.has(t.id) : undefined
-                        }
-                      />
-                    </div>
-                  ));
-                })()}
+                {relevanceSortedTools.map(({ tool: t, score }) => (
+                  <div key={t.id} className="w-[175px]">
+                    <ToolCard
+                      tool={t}
+                      onClick={() => {
+                        setSelectedTool(t);
+                      }}
+                      relevanceScore={score > 0 ? score : 0.08}
+                      isDirectMatch={
+                        searchQuery.trim() ? directMatchIds.has(t.id) : undefined
+                      }
+                      isRelatedMatch={
+                        searchQuery.trim() ? relatedMatchIds.has(t.id) : undefined
+                      }
+                      hasSearch={searchQuery.trim().length > 0}
+                    />
+                  </div>
+                ))}
               </div>
             </motion.div>
           </motion.div>
@@ -193,6 +203,7 @@ export function CanvasTab({
                   isRelatedMatch={
                     searchQuery.trim() ? relatedMatchIds.has(tool.id) : undefined
                   }
+                  hasSearch={searchQuery.trim().length > 0}
                 />
               </div>
             ))}
