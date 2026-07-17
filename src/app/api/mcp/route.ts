@@ -33,11 +33,9 @@ export async function GET(request: Request) {
       const endpointMsg = "event: endpoint\ndata: " + url.pathname + "?connectionId=" + connectionId + "\n\n";
       controller.enqueue(new TextEncoder().encode(endpointMsg));
 
-      console.log("[MCP] Client connected: " + connectionId);
     },
     cancel() {
       clients.delete(connectionId);
-      console.log("[MCP] Client disconnected: " + connectionId);
     }
   });
 
