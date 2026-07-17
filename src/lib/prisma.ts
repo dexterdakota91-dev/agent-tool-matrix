@@ -13,13 +13,12 @@ let prisma: PrismaClient;
 if (globalForPrisma.prisma) {
   prisma = globalForPrisma.prisma;
 } else {
-  console.log("ENV KEYS STARTING WITH DATA/NEON:", Object.keys(process.env).filter(k => k.startsWith("DATA") || k.startsWith("NEON")));
   const connectionString = (process.env.DATABASE_URL_UNPOOLED || process.env.DATABASE_URL || "")
     .replace(/^\uFEFF/, "")
     .replace(/channel_binding=require&?/g, "")
     .replace(/^[\\\"\']+|[\\\"\']+$/g, "")
     .trim();
-  console.log("RESOLVED CONNECTION STRING FOR PRISMA:", JSON.stringify(connectionString));
+  // Security: Do not console.log connection string or env vars
   process.env.DATABASE_URL = connectionString;
   process.env.DATABASE_URL_UNPOOLED = connectionString;
 
