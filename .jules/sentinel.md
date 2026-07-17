@@ -1,4 +1,5 @@
-## 2024-05-18 - Exposed database connection string with password in production logs
-**Vulnerability:** A console.log statement in `src/lib/prisma.ts` printed the database connection URL (which contains the password credentials) to the standard output during application startup and container instantiation.
-**Learning:** Developers often leave debug print statements in the code when setting up database clients, especially when troubleshooting environment variable formatting like stripping quotes or appending string suffixes. These debug statements inadvertently end up in production build logs or server runtime logs.
-**Prevention:** Use a code linter rule (e.g., eslint `no-console`) to prevent console.log in production code, or create safe debug wrapper functions that automatically redact connection strings and secrets before outputting to logs.
+
+## 2024-05-24 - [Cleartext Database Connection String in Logs]
+**Vulnerability:** Prisma initialization logged the cleartext connection string and process environment variables via `console.log`.
+**Learning:** Initializing connections or environments safely requires caution to avoid accidental exposure of secrets in runtime or build logs, which are often indexed or stored insecurely.
+**Prevention:** Avoid using `console.log` for database initialization configurations, environment variables, or connection strings. Use secure configuration management or logger abstractions that redact secrets automatically.
