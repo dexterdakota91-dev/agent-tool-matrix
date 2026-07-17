@@ -10,3 +10,6 @@
 ## 2024-05-18 - Optimize MCP Tool Lookup
 **Learning:** Querying the database with an un-optimized lookup logic that pulls large markdown content records into application memory simply to perform an `Array.find()` filter is extremely inefficient (O(N) operation heavily loading memory up to ~98% slower).
 **Action:** Always fetch the minimal dataset required for matching by applying `{ select: { id: true, propertyToMatch: true } }`, run the matcher on this slimmed array, then query the full matched object via a `findUnique({ where: { id } })` constraint.
+## 2024-07-17 - Wrapped Prisma findMany queries in unstable_cache for SSE
+**Learning:** Frequent polling of database endpoints like tools lists via SSE connections can lead to excessive duplicate database queries, causing performance bottlenecks.
+**Action:** Use `unstable_cache` from `next/cache` to wrap repetitive and heavy database queries (like `prisma.tool.findMany`) when they don't need real-time data for every single request or poll. Set appropriate revalidation intervals and tags to ensure data freshness while reducing database load.
