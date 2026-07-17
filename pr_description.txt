@@ -1,0 +1,4 @@
+🎯 **What:** Removed two `console.log` statements in `src/app/api/mcp/route.ts` that logged `[MCP] Client connected:` and `[MCP] Client disconnected:`.
+💡 **Why:** Removing these lines resolves a code health issue related to test authentication logs, preventing log pollution in production environments and improving overall codebase maintainability without impacting architectural or behavioral functionality.
+✅ **Verification:** Ran `npm run lint` and `npx playwright test` (with DB seeding setup). All 30 tests (UI and API E2E) passed successfully, confirming no regressions.
+✨ **Result:** A cleaner implementation of the SSE client connections endpoint that will no longer emit debug/test logs.

@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import { useState, useEffect } from "react";
 import { Search, X } from "lucide-react";
 import { useCanvasStore } from "@/store/useCanvasStore";
