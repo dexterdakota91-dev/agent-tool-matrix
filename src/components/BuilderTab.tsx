@@ -152,7 +152,9 @@ export function BuilderTab({
                         type="button"
                         onClick={() => moveStep(idx, "up")}
                         disabled={idx === 0}
-                        className="p-1 rounded bg-white/5 border border-white/10 hover:bg-white/10 disabled:opacity-30 disabled:hover:bg-white/5 text-foreground/80"
+                        aria-label="Move step up"
+                        title="Move step up"
+                        className="p-1 rounded bg-white/5 border border-white/10 hover:bg-white/10 disabled:opacity-30 disabled:hover:bg-white/5 text-foreground/80 cursor-pointer"
                       >
                         <ChevronUp className="w-3.5 h-3.5" />
                       </button>
@@ -160,7 +162,9 @@ export function BuilderTab({
                         type="button"
                         onClick={() => moveStep(idx, "down")}
                         disabled={idx === builderSteps.length - 1}
-                        className="p-1 rounded bg-white/5 border border-white/10 hover:bg-white/10 disabled:opacity-30 disabled:hover:bg-white/5 text-foreground/80"
+                        aria-label="Move step down"
+                        title="Move step down"
+                        className="p-1 rounded bg-white/5 border border-white/10 hover:bg-white/10 disabled:opacity-30 disabled:hover:bg-white/5 text-foreground/80 cursor-pointer"
                       >
                         <ChevronDown className="w-3.5 h-3.5" />
                       </button>
@@ -168,7 +172,9 @@ export function BuilderTab({
                       <button
                         type="button"
                         onClick={() => removeFromPipeline(idx)}
-                        className="p-1.5 rounded bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 text-red-400 ml-2"
+                        aria-label="Remove step"
+                        title="Remove step"
+                        className="p-1.5 rounded bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 text-red-400 ml-2 cursor-pointer"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
