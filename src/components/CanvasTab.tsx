@@ -126,6 +126,7 @@ export function CanvasTab({
                 isAddedToCart={cart.some((t) => t.id === selectedTool.id)}
                 onAddToCart={() => addToCart(selectedTool)}
                 onRemoveFromCart={() => removeFromCart(selectedTool.id)}
+                hasSearch={searchQuery.trim().length > 0}
               />
 
               {/* Fixed Clear Selection button at bottom */}
@@ -171,6 +172,7 @@ export function CanvasTab({
                       isRelatedMatch={
                         searchQuery.trim() ? relatedMatchIds.has(t.id) : undefined
                       }
+                      hasSearch={searchQuery.trim().length > 0}
                     />
                   </div>
                 ))}
@@ -201,6 +203,7 @@ export function CanvasTab({
                   isRelatedMatch={
                     searchQuery.trim() ? relatedMatchIds.has(tool.id) : undefined
                   }
+                  hasSearch={searchQuery.trim().length > 0}
                 />
               </div>
             ))}
