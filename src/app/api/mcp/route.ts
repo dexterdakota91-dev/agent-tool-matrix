@@ -176,8 +176,12 @@ async function processMcpRequest(
         if (!name) throw new Error("Missing tool name");
         const args = params?.arguments || {};
 
-        const dbTools = await prisma.tool.findMany();
-        const tool = dbTools.find(t => normalizeName(t.title) === name);
+        // Optimization: Fetch only id and title for in-memory filtering, then query full object
+        const dbTools = await prisma.tool.findMany({ select: { id: true, title: true } });
+        const match = dbTools.find(t => normalizeName(t.title) === name);
+        if (!match) throw new Error("Tool not found");
+
+        const tool = await prisma.tool.findUnique({ where: { id: match.id } });
         if (!tool) throw new Error("Tool not found");
 
         let responseText = tool.markdownContent || "";
@@ -293,11 +297,16 @@ async function processMcpRequest(
         const name = params?.name;
         if (!name) throw new Error("Missing prompt name");
 
+        // Optimization: Fetch only id and title for in-memory filtering, then query full object
         const dbTools = await prisma.tool.findMany({
-          where: { type: "prompt" }
+          where: { type: "prompt" },
+          select: { id: true, title: true }
         });
 
-        const tool = dbTools.find(t => normalizeName(t.title) === name);
+        const match = dbTools.find(t => normalizeName(t.title) === name);
+        if (!match) throw new Error("Prompt not found");
+
+        const tool = await prisma.tool.findUnique({ where: { id: match.id } });
         if (!tool) throw new Error("Prompt not found");
 
         return {
