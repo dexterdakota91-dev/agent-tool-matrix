@@ -68,6 +68,7 @@ export function ToolFormModal({
               <button
                 onClick={onClose}
                 className="p-1 rounded-lg bg-white/5 hover:bg-white/10 text-foreground transition"
+                aria-label="Close modal"
               >
                 <X className="w-4 h-4" />
               </button>
