@@ -29,22 +29,22 @@ test.describe('Agent Tool Matrix E2E Test Suite', () => {
   });
 
   test('Search and filter functionality', async ({ page }) => {
-    // Search for Git Conflict Resolver
+    // Search for Git Master
     const searchInput = page.getByPlaceholder('Search Tools, Skills, Connectors, or by #tag');
-    await searchInput.fill('Git Conflict Resolver');
+    await searchInput.fill('Git Master');
 
-    // Check that Git Conflict Resolver card is visible
-    const card = page.locator('h3', { hasText: 'Git Conflict Resolver' }).first();
+    // Check that Git Master card is visible
+    const card = page.locator('h3', { hasText: 'Git Master' }).first();
     await expect(card).toBeVisible();
   });
 
   test('Selecting a tool card opens detailed view', async ({ page }) => {
-    // Search for Git Conflict Resolver first to make it visible and clickable
+    // Search for Git Master first to make it visible and clickable
     const searchInput = page.getByPlaceholder('Search Tools, Skills, Connectors, or by #tag');
-    await searchInput.fill('Git Conflict Resolver');
+    await searchInput.fill('Git Master');
 
-    // Click on Git Conflict Resolver card
-    const card = page.locator('h3', { hasText: 'Git Conflict Resolver' }).first();
+    // Click on Git Master card
+    const card = page.locator('h3', { hasText: 'Git Master' }).first();
     await card.click();
 
     // Verify detail panel elements
@@ -72,8 +72,8 @@ test.describe('Agent Tool Matrix E2E Test Suite', () => {
     const builderTab = page.getByRole('button', { name: 'Pipeline Builder' });
     await builderTab.click();
 
-    // 2. Add Git Conflict Resolver to Pipeline from the side node list
-    const item = page.locator('div.rounded-xl', { hasText: 'Git Conflict Resolver' }).first();
+    // 2. Add Git Master to Pipeline from the side node list
+    const item = page.locator('div.rounded-xl', { hasText: 'Git Master' }).first();
     await expect(item).toBeVisible();
     const addBtn = item.getByRole('button', { name: 'Add Step' });
     await expect(addBtn).toBeVisible();
@@ -120,8 +120,8 @@ test.describe('Agent Tool Matrix E2E Test Suite', () => {
   });
 
   test('Compilation Cart flow works correctly', async ({ page }) => {
-    // 1. Click Git Conflict Resolver to open details view
-    const card = page.locator('h3', { hasText: 'Git Conflict Resolver' }).first();
+    // 1. Click Git Master to open details view
+    const card = page.locator('h3', { hasText: 'Git Master' }).first();
     await card.click();
 
     // 2. Click "Add to Cart"
