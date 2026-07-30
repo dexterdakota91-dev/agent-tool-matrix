@@ -313,3 +313,17 @@ export async function getInitialData(): Promise<InitialData> {
     return { tools: [], workflows: [], apiKeys: [] };
   }
 }
+
+export async function createComment(content: string): Promise<boolean> {
+  try {
+    await prisma.comment.create({
+      data: {
+        content,
+      }
+    });
+    return true;
+  } catch (error) {
+    console.error("Failed to create comment:", error);
+    return false;
+  }
+}
