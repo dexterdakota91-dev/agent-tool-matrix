@@ -108,7 +108,7 @@ export default async function CommentPage() {
                           </span>
                         </div>
                         <p className="text-zinc-300 text-sm leading-relaxed whitespace-pre-wrap break-words">
-                          {c.comment}
+                          {c.content}
                         </p>
                       </div>
                     </div>
