@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import DOMPurify from "isomorphic-dompurify";
 
 interface MarkdownRendererProps {
   content: string;
@@ -42,7 +43,7 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
     // Inline code (`code`)
     html = html.replace(/`(.*?)`/g, "<code class='bg-black/10 dark:bg-white/10 px-1.5 py-0.5 rounded font-mono text-xs text-pink-500'>$1</code>");
 
-    return html;
+    return DOMPurify.sanitize(html);
   };
 
   lines.forEach((line, idx) => {

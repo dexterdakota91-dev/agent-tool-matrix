@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { validateApiKey } from "@/lib/auth-api";
 import crypto from "crypto";
+import { unstable_cache } from "next/cache";
 
 // In-memory store for active SSE client connections (works for local development and single-server environments)
 const clients = new Map<string, ReadableStreamDefaultController>();
@@ -11,6 +12,40 @@ const clients = new Map<string, ReadableStreamDefaultController>();
 function normalizeName(title: string): string {
   return title.replace(/[^a-zA-Z0-9_-]/g, "_").toLowerCase();
 }
+
+
+// Caching wrappers to reduce duplicate heavy db calls over frequent polling via SSE connection
+const getCachedAllTools = unstable_cache(
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async () => {
+    const data = await prisma.tool.findMany({ select: { id: true, title: true, type: true, description: true, markdownContent: true } });
+    return data.map(d => ({...d, createdAt: undefined, updatedAt: undefined}));
+  },
+  ['all-tools'],
+  { tags: ['tools'], revalidate: 60 }
+);
+
+const getCachedPartialTools = unstable_cache(
+  async () => prisma.tool.findMany({ select: { id: true, title: true } }),
+  ['partial-tools'],
+  { tags: ['tools'], revalidate: 60 }
+);
+
+const getCachedPromptTools = unstable_cache(
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async () => {
+    const data = await prisma.tool.findMany({ where: { type: "prompt" }, select: { id: true, title: true, type: true, description: true, markdownContent: true } });
+    return data.map(d => ({...d, createdAt: undefined, updatedAt: undefined}));
+  },
+  ['prompt-tools'],
+  { tags: ['tools'], revalidate: 60 }
+);
+
+const getCachedPartialPromptTools = unstable_cache(
+  async () => prisma.tool.findMany({ where: { type: "prompt" }, select: { id: true, title: true } }),
+  ['partial-prompt-tools'],
+  { tags: ['tools'], revalidate: 60 }
+);
 
 export async function GET(request: Request) {
   // 1. Authenticate connection
@@ -83,6 +118,7 @@ export async function POST(request: Request) {
       const message = "event: message\ndata: " + JSON.stringify(responseJson) + "\n\n";
       try {
         controller.enqueue(new TextEncoder().encode(message));
+        controller.close();
       } catch (err) {
         console.error("[MCP] Failed to send message to client " + connectionId + ":", err);
         clients.delete(connectionId);
@@ -98,6 +134,7 @@ export async function POST(request: Request) {
       const message = "event: message\ndata: " + JSON.stringify(errorResponse) + "\n\n";
       try {
         controller.enqueue(new TextEncoder().encode(message));
+        controller.close();
       } catch {}
     });
 
