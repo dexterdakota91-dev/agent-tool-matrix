@@ -1,6 +1,5 @@
-⚡ Bolt: Cache MCP tools findMany queries
+🔒 Sentinel: Fix Cross-Site Scripting (XSS) in MarkdownRenderer
 
-🎯 What: Wrapped the Prisma tool findMany queries within unstable_cache in src/app/api/mcp/route.ts.
-💡 Why: Reduces duplicate heavy db calls over frequent polling for tools lists via the SSE connection, leading to a performance optimization.
-✅ Verification: Ran `npm run lint` and `npx playwright test` (E2E API test suite passed up to DB transfer limit error, which is unrelated to this PR's changes).
-✨ Result: `findMany` queries are correctly cached with `unstable_cache` handling Prisma Date object serialization limitations smoothly.
+🎯 What: Replaced a custom, regex-based HTML escaper with `isomorphic-dompurify` to securely sanitize HTML strings rendered inside the `MarkdownRenderer` component.
+⚠️ Risk: The previous custom regex for HTML escaping (`replace(/</g, "&lt;")`) was brittle and could potentially be bypassed by complex payloads or edge cases, allowing execution of malicious scripts (XSS) in the browser when rendering markdown.
+🛡️ Solution: Integrated `isomorphic-dompurify` to sanitize all generated HTML before passing it to `dangerouslySetInnerHTML`. This ensures robust XSS protection out of the box while preserving expected formatting. Added the new security finding to `.jules/sentinel.md`.

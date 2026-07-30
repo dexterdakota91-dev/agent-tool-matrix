@@ -64,3 +64,11 @@ model ApiKey {
 
   @@map("api_keys")
 }
+
+model Comment {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  content   String
+  createdAt DateTime @default(now())
+
+  @@map("comments")
+}

@@ -9,11 +9,16 @@ export const metadata = {
 };
 
 export default async function CommentPage() {
-  const comments = await prisma.comment.findMany({
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
+  let comments: any[] = [];
+  try {
+    comments = await prisma.comment.findMany({
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+  } catch (error) {
+    console.error("Failed to fetch comments, returning empty array", error);
+  }
 
   return (
     <main className="relative min-h-screen bg-[#020203] text-[#ededed] font-sans overflow-x-hidden">
@@ -108,7 +113,7 @@ export default async function CommentPage() {
                           </span>
                         </div>
                         <p className="text-zinc-300 text-sm leading-relaxed whitespace-pre-wrap break-words">
-                          {c.comment}
+                          {c.content}
                         </p>
                       </div>
                     </div>
