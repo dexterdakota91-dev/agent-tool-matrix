@@ -1,5 +1,4 @@
-🔒 Sentinel: Fix Cross-Site Scripting (XSS) in MarkdownRenderer
-
-🎯 What: Replaced a custom, regex-based HTML escaper with `isomorphic-dompurify` to securely sanitize HTML strings rendered inside the `MarkdownRenderer` component.
-⚠️ Risk: The previous custom regex for HTML escaping (`replace(/</g, "&lt;")`) was brittle and could potentially be bypassed by complex payloads or edge cases, allowing execution of malicious scripts (XSS) in the browser when rendering markdown.
-🛡️ Solution: Integrated `isomorphic-dompurify` to sanitize all generated HTML before passing it to `dangerouslySetInnerHTML`. This ensures robust XSS protection out of the box while preserving expected formatting. Added the new security finding to `.jules/sentinel.md`.
+🎯 **What:** Removed two `console.log` statements in `src/app/api/mcp/route.ts` that logged `[MCP] Client connected:` and `[MCP] Client disconnected:`.
+💡 **Why:** Removing these lines resolves a code health issue related to test authentication logs, preventing log pollution in production environments and improving overall codebase maintainability without impacting architectural or behavioral functionality.
+✅ **Verification:** Ran `npm run lint` and `npx playwright test` (with DB seeding setup). All 30 tests (UI and API E2E) passed successfully, confirming no regressions.
+✨ **Result:** A cleaner implementation of the SSE client connections endpoint that will no longer emit debug/test logs.

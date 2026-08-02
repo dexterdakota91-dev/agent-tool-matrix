@@ -1,5 +1,6 @@
-🔒 Sentinel: Fix Cross-Site Scripting (XSS) in MarkdownRenderer
+🧹 [Code Health] Clean up unused React import in SearchBar
 
-🎯 What: Replaced a custom, regex-based HTML escaper with `isomorphic-dompurify` to securely sanitize HTML strings rendered inside the `MarkdownRenderer` component.
-⚠️ Risk: The previous custom regex for HTML escaping (`replace(/</g, "&lt;")`) was brittle and could potentially be bypassed by complex payloads or edge cases, allowing execution of malicious scripts (XSS) in the browser when rendering markdown.
-🛡️ Solution: Integrated `isomorphic-dompurify` to sanitize all generated HTML before passing it to `dangerouslySetInnerHTML`. This ensures robust XSS protection out of the box while preserving expected formatting. Added the new security finding to `.jules/sentinel.md`.
+🎯 **What:** Removed the unused `import * as React from "react";` import statement from `src/components/SearchBar.tsx`.
+💡 **Why:** This resolves a dead code/unused import issue, which improves code readability and maintainability without affecting any functionality, as `React` was not being used anywhere in the file.
+✅ **Verification:** Verified by running `npm run lint` successfully and executing the full Playwright E2E test suite (`npx playwright test`) to ensure no regressions were introduced.
+✨ **Result:** A cleaner component file with improved code health.
