@@ -1,4 +1,3 @@
-import { unstable_cache } from "next/cache";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { validateApiKey } from "@/lib/auth-api";
@@ -86,7 +85,6 @@ export async function POST(request: Request) {
       const message = "event: message\ndata: " + JSON.stringify(responseJson) + "\n\n";
       try {
         controller.enqueue(new TextEncoder().encode(message));
-        controller.close();
       } catch (err) {
         console.error("[MCP] Failed to send message to client " + connectionId + ":", err);
         clients.delete(connectionId);
@@ -102,7 +100,6 @@ export async function POST(request: Request) {
       const message = "event: message\ndata: " + JSON.stringify(errorResponse) + "\n\n";
       try {
         controller.enqueue(new TextEncoder().encode(message));
-        controller.close();
       } catch {}
     });
 
@@ -148,8 +145,8 @@ async function processMcpRequest(
 
     case "tools/list":
       try {
-        // Fetch all tools from cache
-        const dbTools = await unstable_cache(async () => await prisma.tool.findMany(), ["mcp-tools-list"], { revalidate: 60, tags: ["tools"] })();
+        // Fetch all tools from database
+        const dbTools = await prisma.tool.findMany();
 
         // Expose prompt and connector tools as executable schemas (or skills run locally)
         const mcpTools = dbTools.map((tool: any) => ({ // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -185,8 +182,7 @@ async function processMcpRequest(
         const args = params?.arguments || {};
 
         // Fetch only id and title for matching to reduce memory footprint
-        // Fetching is cached to reduce db load over polling connections
-        const partialTools = await unstable_cache(async () => await prisma.tool.findMany({ select: { id: true, title: true } }), ["mcp-tools-partial"], { revalidate: 60, tags: ["tools"] })();
+        const partialTools = await prisma.tool.findMany({ select: { id: true, title: true } });
         const match = partialTools.find((t: any) => normalizeName(t.title) === name); // eslint-disable-line @typescript-eslint/no-explicit-any
         if (!match) throw new Error("Tool not found");
 
@@ -221,7 +217,7 @@ async function processMcpRequest(
 
     case "resources/list":
       try {
-        const dbTools = await unstable_cache(async () => await prisma.tool.findMany(), ["mcp-tools-list"], { revalidate: 60, tags: ["tools"] })();
+        const dbTools = await prisma.tool.findMany();
 
         // Expose Prompt & Skill files as resources for ingestion
         const mcpResources = dbTools
@@ -276,7 +272,7 @@ async function processMcpRequest(
 
     case "prompts/list":
       try {
-        const dbTools = await unstable_cache(async () => await prisma.tool.findMany({ where: { type: "prompt" } }), ["mcp-prompts-list"], { revalidate: 60, tags: ["tools"] })();
+        const dbTools = await prisma.tool.findMany({ where: { type: "prompt" } });
 
         const mcpPrompts = dbTools.map((tool: any) => ({ // eslint-disable-line @typescript-eslint/no-explicit-any
           name: normalizeName(tool.title),
@@ -305,13 +301,12 @@ async function processMcpRequest(
         if (!name) throw new Error("Missing prompt name");
 
         // Fetch only id and title for matching to reduce memory footprint
-        // Fetching is cached to reduce db load over polling connections
-        const partialTools = await unstable_cache(async () => await prisma.tool.findMany({
+        const partialTools = await prisma.tool.findMany({
           where: { type: "prompt" },
           select: { id: true, title: true }
-        }), ["mcp-prompts-partial"], { revalidate: 60, tags: ["tools"] })();
+        });
 
-        const match = partialTools.find((t: any) => normalizeName(t.title) === name); // eslint-disable-line @typescript-eslint/no-explicit-any
+        const match = partialTools.find((t: any) => normalizeName(t.title) === name); // eslint-disable-line @typescript-eslint/no-explicit-any // eslint-disable-line @typescript-eslint/no-explicit-any
         if (!match) throw new Error("Prompt not found");
         const tool = await prisma.tool.findUnique({ where: { id: match.id } });
         if (!tool) throw new Error("Prompt not found");

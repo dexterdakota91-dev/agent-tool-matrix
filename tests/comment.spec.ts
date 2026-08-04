@@ -53,7 +53,8 @@ test.describe('Agent Tool Matrix Comment & Feedback Flow', () => {
     const commentText = `E2E Comment: feedback test run ${randomStr}`;
 
     const textarea = page.locator('textarea#comment');
-    await textarea.fill(commentText);
+    await textarea.click();
+    await textarea.pressSequentially(commentText, { delay: 10 });
 
     // Verify button is now enabled
     const submitBtn = page.getByRole('button', { name: 'Submit Comment' });

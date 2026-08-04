@@ -1,10 +1,12 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Send, CheckCircle2, AlertTriangle, Loader2 } from "lucide-react";
 import { createComment } from "@/app/actions";
 
 export default function CommentForm() {
+  const router = useRouter();
   const [commentText, setCommentText] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -23,6 +25,7 @@ export default function CommentForm() {
       if (res) {
         setCommentText("");
         setSuccess(true);
+        router.refresh();
         // Clear success message after 5 seconds
         setTimeout(() => setSuccess(false), 5000);
       } else {
