@@ -58,7 +58,7 @@ export async function validateApiKey(request: Request): Promise<boolean> {
       prisma.apiKey.update({
         where: { id: keyRecord.id },
         data: { lastUsed: new Date() }
-      }).catch((err) => console.error("Failed to update API key lastUsed:", err));
+      }).catch((err: unknown) => console.error("Failed to update API key lastUsed:", err));
 
       return true;
     }

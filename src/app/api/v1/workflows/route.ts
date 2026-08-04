@@ -60,7 +60,7 @@ export async function POST(request: Request) {
       }
     });
 
-    const existingIds = new Set(existingTools.map(t => t.id));
+    const existingIds = new Set(existingTools.map((t: any) => t.id)); // eslint-disable-line @typescript-eslint/no-explicit-any
     const allExist = toolIds.every(id => existingIds.has(id));
 
     if (!allExist) {
@@ -68,7 +68,7 @@ export async function POST(request: Request) {
     }
 
     // Create workflow and link tools within a transaction
-    const newWorkflow = await prisma.$transaction(async (tx) => {
+    const newWorkflow = await prisma.$transaction(async (tx: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
       const wf = await tx.workflow.create({
         data: {
           title,

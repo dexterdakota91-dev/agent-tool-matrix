@@ -37,6 +37,9 @@ test.describe('useCanvasStore', () => {
       title: 'Tool 1',
       type: 'prompt',
       description: 'Test description',
+      tags: [],
+      markdownContent: null,
+      createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
 
@@ -52,6 +55,9 @@ test.describe('useCanvasStore', () => {
       title: 'Tool 1',
       type: 'prompt',
       description: 'Test description',
+      tags: [],
+      markdownContent: null,
+      createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
 
@@ -68,6 +74,9 @@ test.describe('useCanvasStore', () => {
       title: 'Tool 1',
       type: 'prompt',
       description: 'Test description',
+      tags: [],
+      markdownContent: null,
+      createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
     const mockTool2: ToolData = {
@@ -75,6 +84,9 @@ test.describe('useCanvasStore', () => {
       title: 'Tool 2',
       type: 'skill',
       description: 'Test description 2',
+      tags: [],
+      markdownContent: null,
+      createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
 
@@ -94,6 +106,9 @@ test.describe('useCanvasStore', () => {
       title: 'Tool 1',
       type: 'prompt',
       description: 'Test description',
+      tags: [],
+      markdownContent: null,
+      createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
 

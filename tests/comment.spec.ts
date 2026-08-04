@@ -1,4 +1,4 @@
-﻿import { loadEnvConfig } from '@next/env';
+import { loadEnvConfig } from '@next/env';
 loadEnvConfig(process.cwd());
 
 import { test, expect } from '@playwright/test';
@@ -17,7 +17,7 @@ test.describe('Agent Tool Matrix Comment & Feedback Flow', () => {
       if (prisma) {
         await prisma.comment.deleteMany({
           where: {
-            comment: {
+            content: {
               startsWith: 'E2E Comment:'
             }
           }
