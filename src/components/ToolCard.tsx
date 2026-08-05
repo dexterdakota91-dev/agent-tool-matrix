@@ -445,9 +445,8 @@ function ToolCardInner({
       onMouseLeave={() => setIsHovered(false)}
       className={`
         relative cursor-pointer select-none group origin-top
-        glow-card glow-card-${tool.type}
         rounded-xl p-3
-        backdrop-blur-md bg-zinc-950/80 dark:bg-zinc-950/90
+        backdrop-blur-md bg-white/5 dark:bg-zinc-900/60
         border shadow-md
         flex flex-col justify-between
         w-full ${heightClass}
