@@ -14,7 +14,6 @@ import {
 } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { CartFab } from "@/components/CartFab";
-import { StarfieldBackground } from "@/components/StarfieldBackground";
 import { useCanvasStore } from "@/store/useCanvasStore";
 import { useWorkflowSimulation } from "@/hooks/useWorkflowSimulation";
 import {
@@ -376,8 +375,6 @@ export default function AgentToolMatrix() {
 
   return (
     <main className="relative h-screen overflow-hidden bg-background text-foreground transition-colors duration-500 flex flex-col">
-      <StarfieldBackground />
-
       {/* Top Banner Gradient glow */}
       <div className="absolute top-0 left-1/4 right-1/4 h-72 bg-gradient-to-b from-blue-600/10 via-emerald-600/5 to-transparent rounded-full filter blur-[80px] pointer-events-none" />
 

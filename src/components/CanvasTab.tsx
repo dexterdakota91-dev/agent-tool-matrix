@@ -75,10 +75,13 @@ export function CanvasTab({
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: 20 }}
       transition={{ duration: 0.5 }}
-      className="flex-grow flex flex-col gap-4 overflow-hidden h-full min-h-0 bg-white/5 dark:bg-zinc-900/50 backdrop-blur-xl border border-white/10 rounded-2xl p-4 md:p-5 shadow-2xl"
+      className="flex-grow flex flex-col gap-4 overflow-hidden h-full min-h-0 bg-zinc-950/70 dark:bg-zinc-900/60 backdrop-blur-2xl border border-white/15 rounded-2xl p-4 md:p-5 shadow-2xl relative"
     >
+      {/* Subtle Translucent Radial Backdrop Aura behind skill cards */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(30,58,95,0.4)_0%,_rgba(17,26,40,0.25)_50%,_transparent_80%)] pointer-events-none rounded-2xl" />
+
       {/* Unified Search & Header Section */}
-      <div className="flex-shrink-0">
+      <div className="flex-shrink-0 relative z-10">
         <SearchBar />
       </div>
 
@@ -90,7 +93,7 @@ export function CanvasTab({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="text-center py-20 bg-white/5 rounded-2xl border border-dashed border-white/10 flex flex-col items-center justify-center gap-3 w-full"
+            className="text-center py-20 bg-white/5 rounded-2xl border border-dashed border-white/10 flex flex-col items-center justify-center gap-3 w-full relative z-10"
           >
             <Info className="w-12 h-12 opacity-40 text-blue-400" />
             <h3 className="text-base font-bold text-foreground">No Tools Found</h3>
@@ -106,7 +109,7 @@ export function CanvasTab({
             onClick={(e) => {
               if (e.target === e.currentTarget) setSelectedTool(null);
             }}
-            className="flex-grow flex gap-6 overflow-x-auto overflow-y-hidden pb-4 min-h-0 h-full w-full"
+            className="flex-grow flex gap-6 overflow-x-auto overflow-y-hidden pt-3.5 pb-4 px-2 min-h-0 h-full w-full relative z-10"
           >
             {/* LEFT 1/3: Selected Card fully expanded */}
             <motion.div
@@ -152,13 +155,13 @@ export function CanvasTab({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.05, duration: 0.6 }}
-              className="flex-grow h-full min-h-0 overflow-x-auto overflow-y-hidden"
+              className="flex-grow h-full min-h-0 overflow-x-auto overflow-y-hidden pt-1 pb-2"
             >
               <div
                 onClick={(e) => {
                   if (e.target === e.currentTarget) setSelectedTool(null);
                 }}
-                className="grid grid-flow-col grid-rows-3 gap-3 auto-cols-max h-full min-h-0"
+                className="grid grid-flow-col grid-rows-3 gap-3.5 auto-cols-max h-full min-h-0"
               >
                 {relevanceSortedTools.map(({ tool: t, score }) => (
                   <div key={t.id} className="w-[175px]">
@@ -189,7 +192,7 @@ export function CanvasTab({
             onClick={(e) => {
               if (e.target === e.currentTarget) setSelectedTool(null);
             }}
-            className="flex-grow grid grid-flow-col grid-rows-3 gap-3 auto-cols-max overflow-x-auto overflow-y-hidden pb-4 min-h-0 w-full"
+            className="flex-grow grid grid-flow-col grid-rows-3 gap-3.5 auto-cols-max overflow-x-auto overflow-y-hidden pt-3.5 pb-4 px-2 min-h-0 w-full relative z-10"
           >
             {filteredTools.map((tool, idx) => (
               <div key={tool.id} className="w-[175px]">
