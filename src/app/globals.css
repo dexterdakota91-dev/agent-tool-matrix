@@ -114,4 +114,69 @@ body {
   }
 }
 
+/* Responsive Animated Gradient Card Border & Glow Effect */
+.glow-card {
+  position: relative;
+  z-index: 1;
+}
+
+.glow-card::before {
+  content: '';
+  position: absolute;
+  inset: -1.5px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, #e81cff 0%, #40c9ff 100%);
+  z-index: -2;
+  pointer-events: none;
+  opacity: 0.45;
+  transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.5s ease;
+}
+
+.glow-card::after {
+  content: "";
+  z-index: -1;
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(135deg, #fc00ff 0%, #00dbde 100%);
+  transform: translate3d(0, 0, 0) scale(0.96);
+  filter: blur(14px);
+  opacity: 0.3;
+  transition: filter 0.5s ease, opacity 0.5s ease, transform 0.5s ease;
+  pointer-events: none;
+}
+
+.glow-card-prompt::before {
+  background: linear-gradient(135deg, #e81cff 0%, #ec4899 50%, #40c9ff 100%);
+}
+.glow-card-prompt::after {
+  background: linear-gradient(135deg, #fc00ff 0%, #ec4899 50%, #00dbde 100%);
+}
+
+.glow-card-skill::before {
+  background: linear-gradient(135deg, #40c9ff 0%, #3b82f6 50%, #00dbde 100%);
+}
+.glow-card-skill::after {
+  background: linear-gradient(135deg, #00dbde 0%, #3b82f6 50%, #e81cff 100%);
+}
+
+.glow-card-mcp::before {
+  background: linear-gradient(135deg, #10b981 0%, #00dbde 50%, #40c9ff 100%);
+}
+.glow-card-mcp::after {
+  background: linear-gradient(135deg, #00dbde 0%, #10b981 50%, #fc00ff 100%);
+}
+
+.glow-card:hover::before {
+  opacity: 0.95;
+  transform: scale(1.03);
+}
+
+.glow-card:hover::after {
+  filter: blur(22px);
+  opacity: 0.75;
+  transform: scale(1.02);
+}
+
+
 
