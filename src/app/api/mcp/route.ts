@@ -306,7 +306,7 @@ async function processMcpRequest(
           select: { id: true, title: true }
         });
 
-        const match = partialTools.find((t: any) => normalizeName(t.title) === name); // eslint-disable-line @typescript-eslint/no-explicit-any // eslint-disable-line @typescript-eslint/no-explicit-any
+        const match = partialTools.find((t: { id: string, title: string }) => normalizeName(t.title) === name);
         if (!match) throw new Error("Prompt not found");
         const tool = await prisma.tool.findUnique({ where: { id: match.id } });
         if (!tool) throw new Error("Prompt not found");

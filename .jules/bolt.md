@@ -14,3 +14,6 @@
 ## 2024-05-18 - Optimize MCP Tool Lookup
 **Learning:** Querying the database with an un-optimized lookup logic that pulls large markdown content records into application memory simply to perform an `Array.find()` filter is extremely inefficient (O(N) operation heavily loading memory up to ~98% slower).
 **Action:** Always fetch the minimal dataset required for matching by applying `{ select: { id: true, propertyToMatch: true } }`, run the matcher on this slimmed array, then query the full matched object via a `findUnique({ where: { id } })` constraint.
+## 2026-08-18 - Removing Blocking Wait Loops in Workflow Simulation
+**Learning:** Using `await new Promise(r => setTimeout(r, ms))` within nested loops creates artificial latency proportional to the total number of items, significantly slowing down simulated pipelines or logging.
+**Action:** Remove hardcoded, artificial delays from simulation and batch state updates (e.g. `setSimLogs(prev => [...prev, ...logsForStep])`) rather than awaiting in a loop to eliminate synchronous blocking delay overhead.
