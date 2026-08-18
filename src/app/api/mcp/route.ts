@@ -3,7 +3,6 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { validateApiKey } from "@/lib/auth-api";
 import crypto from "crypto";
-import { unstable_cache } from "next/cache";
 
 // In-memory store for active SSE client connections (works for local development and single-server environments)
 const clients = new Map<string, ReadableStreamDefaultController>();

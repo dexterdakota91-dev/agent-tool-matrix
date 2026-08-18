@@ -60,7 +60,7 @@ export default function CommentForm() {
 
       <button
         type="submit"
-        disabled={loading || !commentText.trim()}
+        disabled={loading}
         className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-xl px-4 py-3 font-semibold transition-all duration-300 shadow-lg shadow-blue-500/10 hover:shadow-blue-500/20 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed select-none cursor-pointer"
       >
         {loading ? (

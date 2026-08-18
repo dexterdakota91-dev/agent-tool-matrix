@@ -9,7 +9,7 @@ export const metadata = {
 };
 
 export default async function CommentPage() {
-  let comments: any[] = [];
+  let comments: import("@prisma/client").Comment[] = [];
   try {
     comments = await prisma.comment.findMany({
       orderBy: {

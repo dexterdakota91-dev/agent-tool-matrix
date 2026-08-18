@@ -17,7 +17,7 @@ test.describe('Agent Tool Matrix Comment & Feedback Flow', () => {
       if (prisma) {
         await prisma.comment.deleteMany({
           where: {
-            comment: {
+            content: {
               startsWith: 'E2E Comment:'
             }
           }
@@ -54,9 +54,13 @@ test.describe('Agent Tool Matrix Comment & Feedback Flow', () => {
 
     const textarea = page.locator('textarea#comment');
     await textarea.fill(commentText);
+    await textarea.evaluate((node) => node.dispatchEvent(new Event("input", { bubbles: true })));
+    await textarea.press("Tab");
 
     // Verify button is now enabled
     const submitBtn = page.getByRole('button', { name: 'Submit Comment' });
+    await submitBtn.waitFor({ state: "visible" });
+    await page.waitForTimeout(500);
     await expect(submitBtn).toBeEnabled();
 
     // Click submit
