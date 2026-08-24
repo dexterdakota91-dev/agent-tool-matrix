@@ -51,13 +51,9 @@ export function useWorkflowSimulation() {
       setSimLogs(prev => [...prev, `\n🚀 [EXECUTION] Running Step ${i + 1}: ${tool.toolTitle || "Agent Tool"}`]);
 
       const logsForStep = stepLogs[i] || stepLogs[3];
-      for (const log of logsForStep) {
-        await new Promise(r => setTimeout(r, 600));
-        setSimLogs(prev => [...prev, log]);
-      }
+      setSimLogs(prev => [...prev, ...logsForStep]);
     }
 
-    await new Promise(r => setTimeout(r, 800));
     setSimStatus("success");
     setSimLogs(prev => [...prev, "\n🎉 [SYSTEM] PIPELINE EXECUTION COMPLETED WITH STATUS: SUCCESS (0)"]);
   }, []);
