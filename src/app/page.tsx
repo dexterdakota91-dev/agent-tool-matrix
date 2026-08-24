@@ -375,39 +375,54 @@ export default function AgentToolMatrix() {
   };
 
   return (
-    <main className="relative h-screen overflow-hidden bg-background text-foreground transition-colors duration-500 flex flex-col">
+    <main className="relative h-screen h-[100dvh] overflow-hidden bg-background text-foreground transition-colors duration-500 flex flex-col">
       <StarfieldBackground />
 
       {/* Top Banner Gradient glow */}
       <div className="absolute top-0 left-1/4 right-1/4 h-72 bg-gradient-to-b from-blue-600/10 via-emerald-600/5 to-transparent rounded-full filter blur-[80px] pointer-events-none" />
 
       {/* Navigation */}
-      <nav className="sticky top-0 w-full z-40 backdrop-blur-lg bg-zinc-900/70 border-b border-white/5 py-2.5 px-6 md:px-10 flex flex-col md:flex-row items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg bg-gradient-to-tr from-pink-500 via-blue-600 to-emerald-400 text-white flex items-center justify-center font-bold font-mono tracking-wider shadow-lg shadow-blue-500/10 select-none text-sm">
-            ATM
+      <nav className="sticky top-0 w-full z-40 backdrop-blur-lg bg-zinc-900/70 border-b border-white/5 py-2 sm:py-2.5 px-3 sm:px-6 md:px-10 flex flex-col md:flex-row items-center justify-between gap-2.5 md:gap-3">
+        <div className="flex items-center justify-between w-full md:w-auto gap-3">
+          <div className="flex items-center gap-2.5 sm:gap-3">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-gradient-to-tr from-pink-500 via-blue-600 to-emerald-400 text-white flex items-center justify-center font-bold font-mono tracking-wider shadow-lg shadow-blue-500/10 select-none text-xs sm:text-sm">
+              ATM
+            </div>
+            <div className="text-left">
+              <h1 className="font-bold text-lg sm:text-xl md:text-2xl leading-none tracking-tight bg-gradient-to-r from-white via-zinc-200 to-zinc-400 bg-clip-text text-transparent select-none">
+                Agent Tool Matrix
+              </h1>
+            </div>
           </div>
-          <div className="text-left">
-            <h1 className="font-bold text-xl md:text-2xl leading-none tracking-tight bg-gradient-to-r from-white via-zinc-200 to-zinc-400 bg-clip-text text-transparent select-none">
-              Agent Tool Matrix
-            </h1>
+
+          {/* Mobile visible action controls inline if needed, or grouped on desktop */}
+          <div className="flex md:hidden items-center gap-2">
+            <ThemeToggle />
+            <button
+              onClick={handleOpenCreate}
+              disabled={userRole !== "Admin"}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-blue-600 to-emerald-500 hover:from-blue-500 hover:to-emerald-400 text-white font-semibold text-xs shadow-md active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>Create</span>
+            </button>
           </div>
         </div>
 
-        {/* Navigation Tabs */}
-        <div className="flex items-center bg-white/5 dark:bg-black/40 border border-white/10 rounded-xl p-1 font-sans text-sm">
+        {/* Navigation Tabs (Scrollable on narrow mobile screens) */}
+        <div className="flex items-center bg-white/5 dark:bg-black/40 border border-white/10 rounded-xl p-1 font-sans text-xs sm:text-sm max-w-full overflow-x-auto no-scrollbar shrink-0">
           <button
             onClick={() => {
               setActiveTab("canvas");
               setSimulatingWorkflow(null);
             }}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+            className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg font-medium whitespace-nowrap shrink-0 transition-all duration-200 ${
               activeTab === "canvas"
                 ? "bg-white/10 dark:bg-white/5 text-white border border-white/10 shadow"
                 : "opacity-70 hover:opacity-100 text-foreground"
             }`}
           >
-            <Compass className="w-4 h-4 text-pink-500" />
+            <Compass className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-pink-500" />
             <span>Canvas</span>
           </button>
           <button
@@ -415,26 +430,26 @@ export default function AgentToolMatrix() {
               setActiveTab("builder");
               setSimulatingWorkflow(null);
             }}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+            className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg font-medium whitespace-nowrap shrink-0 transition-all duration-200 ${
               activeTab === "builder"
                 ? "bg-white/10 dark:bg-white/5 text-white border border-white/10 shadow"
                 : "opacity-70 hover:opacity-100 text-foreground"
             }`}
           >
-            <Layers className="w-4 h-4 text-blue-500" />
+            <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-500" />
             <span>Pipeline Builder</span>
           </button>
           <button
             onClick={() => {
               setActiveTab("workflows");
             }}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+            className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg font-medium whitespace-nowrap shrink-0 transition-all duration-200 ${
               activeTab === "workflows"
                 ? "bg-white/10 dark:bg-white/5 text-white border border-white/10 shadow"
                 : "opacity-70 hover:opacity-100 text-foreground"
             }`}
           >
-            <GitBranch className="w-4 h-4 text-emerald-500" />
+            <GitBranch className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-500" />
             <span>Workflows</span>
           </button>
           <button
@@ -442,19 +457,19 @@ export default function AgentToolMatrix() {
               setActiveTab("settings");
               setSimulatingWorkflow(null);
             }}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+            className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg font-medium whitespace-nowrap shrink-0 transition-all duration-200 ${
               activeTab === "settings"
                 ? "bg-white/10 dark:bg-white/5 text-white border border-white/10 shadow"
                 : "opacity-70 hover:opacity-100 text-foreground"
             }`}
           >
-            <Settings className="w-4 h-4 text-zinc-400" />
+            <Settings className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-zinc-400" />
             <span>Settings</span>
           </button>
         </div>
 
-        {/* Actions / Theme */}
-        <div className="flex items-center gap-4">
+        {/* Desktop Actions / Theme */}
+        <div className="hidden md:flex items-center gap-4 shrink-0">
           <ThemeToggle />
           <button
             onClick={handleOpenCreate}
@@ -468,7 +483,7 @@ export default function AgentToolMatrix() {
       </nav>
 
       {/* Main Content Area */}
-      <div className="flex-1 pt-3 md:pt-4 pb-1 md:pb-2 px-4 md:px-8 w-full overflow-hidden flex flex-col min-h-0">
+      <div className="flex-1 pt-2 sm:pt-3 md:pt-4 pb-1 md:pb-2 px-2 sm:px-4 md:px-8 w-full overflow-hidden flex flex-col min-h-0">
         {loading ? (
           <div className="flex flex-col items-center justify-center py-32 gap-3">
             <RefreshCw className="w-10 h-10 text-blue-500 animate-spin" />

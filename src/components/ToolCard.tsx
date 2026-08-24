@@ -204,9 +204,9 @@ function ToolCardInner({
         }}
         className={`
           relative flex flex-col justify-between
-          rounded-xl p-4
+          rounded-xl p-3.5 sm:p-4
           backdrop-blur-md bg-zinc-950/90 dark:bg-zinc-950/95
-          border w-[320px] sm:w-[400px] h-[calc(100%-16px)] min-h-0
+          border w-full max-w-[360px] sm:max-w-[400px] md:w-[380px] lg:w-[420px] h-auto min-h-[380px] md:h-[calc(100%-16px)] min-h-0
           ${activeBorderMap[tool.type]} border-2
         `}
         style={{
@@ -367,11 +367,11 @@ function ToolCardInner({
         </div>
 
         {/* Action Panel (Demoted pipeline button to secondary outline style) */}
-        <div className="flex-shrink-0 flex items-center gap-2 pt-3 border-t border-white/10 mt-3">
+        <div className="flex-shrink-0 flex flex-wrap sm:flex-nowrap items-center gap-1.5 sm:gap-2 pt-2.5 sm:pt-3 border-t border-white/10 mt-2.5 sm:mt-3">
           {onAddToPipeline && (
             <button
               onClick={onAddToPipeline}
-              className="flex-grow flex items-center justify-center gap-1.5 py-1.5 rounded-lg border border-white/10 hover:bg-white/5 text-foreground/85 font-semibold text-xs transition-all active:scale-95 cursor-pointer"
+              className="flex-1 min-w-[90px] flex items-center justify-center gap-1 sm:gap-1.5 py-1.5 px-2 rounded-lg border border-white/10 hover:bg-white/5 text-foreground/85 font-semibold text-[11px] sm:text-xs transition-all active:scale-95 cursor-pointer"
             >
               <Layers className="w-3.5 h-3.5" />
               <span>+ Add Step</span>
@@ -380,7 +380,7 @@ function ToolCardInner({
           {onAddToCart && (
             <button
               onClick={isAddedToCart ? onRemoveFromCart : onAddToCart}
-              className="flex-grow flex items-center justify-center gap-1.5 py-1.5 rounded-lg border border-white/10 hover:bg-white/5 text-foreground/85 font-semibold text-xs transition-all active:scale-95 cursor-pointer animate-fade-in"
+              className="flex-1 min-w-[90px] flex items-center justify-center gap-1 sm:gap-1.5 py-1.5 px-2 rounded-lg border border-white/10 hover:bg-white/5 text-foreground/85 font-semibold text-[11px] sm:text-xs transition-all active:scale-95 cursor-pointer animate-fade-in"
             >
               <ShoppingCart className="w-3.5 h-3.5 text-pink-500" />
               <span>{isAddedToCart ? "Remove Cart" : "Add to Cart"}</span>
@@ -389,7 +389,7 @@ function ToolCardInner({
           {userRole === "Admin" && !isInBuilder && onEdit && (
             <button
               onClick={onEdit}
-              className="p-1.5 rounded-lg border border-white/15 bg-white/5 hover:bg-white/10 text-foreground transition-all active:scale-95 cursor-pointer focus-visible:ring-2 focus-visible:ring-white/30"
+              className="p-1.5 rounded-lg border border-white/15 bg-white/5 hover:bg-white/10 text-foreground transition-all active:scale-95 cursor-pointer focus-visible:ring-2 focus-visible:ring-white/30 shrink-0"
               title="Edit Tool"
               aria-label="Edit tool"
             >
@@ -399,7 +399,7 @@ function ToolCardInner({
           {userRole === "Admin" && !isInBuilder && onDelete && (
             <button
               onClick={onDelete}
-              className="p-1.5 rounded-lg border border-red-500/30 bg-red-600/10 hover:bg-red-600/20 text-red-400 transition-all active:scale-95 cursor-pointer focus-visible:ring-2 focus-visible:ring-red-500/50"
+              className="p-1.5 rounded-lg border border-red-500/30 bg-red-600/10 hover:bg-red-600/20 text-red-400 transition-all active:scale-95 cursor-pointer focus-visible:ring-2 focus-visible:ring-red-500/50 shrink-0"
               title="Delete"
               aria-label="Delete tool"
             >
