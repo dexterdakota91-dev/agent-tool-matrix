@@ -306,7 +306,7 @@ async function processMcpRequest(
           select: { id: true, title: true }
         });
 
-        const match = partialTools.find((t) => normalizeName(t.title) === name);
+        const match = partialTools.find((t: { id: string; title: string }) => normalizeName(t.title) === name);
         if (!match) throw new Error("Prompt not found");
         const tool = await prisma.tool.findUnique({ where: { id: match.id } });
         if (!tool) throw new Error("Prompt not found");

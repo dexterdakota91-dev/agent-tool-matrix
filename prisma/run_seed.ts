@@ -2639,7 +2639,7 @@ async function main() {
 
   // 2. Fetch inserted tools to link workflows
   const toolsResult = await sql`SELECT id, title, type FROM tools`;
-  const toolMap = new Map(toolsResult.map((t) => [t.title, t.id]));
+  const toolMap = new Map(toolsResult.map((t) => [t.title as string, t.id as string]));
 
   // Seed sample workflows
   const workflow1 = await sql`
