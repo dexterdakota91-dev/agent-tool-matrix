@@ -16,6 +16,8 @@ jobs:
     name: Setup
     outputs:
       branch: ${{ steps.branch_name.outputs.current_branch }}
+    env:
+      NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
     runs-on: ubuntu-latest
     steps:
       - name: Get branch name

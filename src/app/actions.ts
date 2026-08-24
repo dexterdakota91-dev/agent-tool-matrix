@@ -36,7 +36,7 @@ export async function getTools(): Promise<Tool[]> {
     const rows = await prisma.tool.findMany({
       orderBy: { createdAt: "desc" }
     });
-    return rows.map((r: import("@prisma/client").Tool) =>
+    return rows.map((r) =>
    ({
       id: r.id,
       title: r.title,
@@ -175,7 +175,7 @@ export async function createWorkflow(data: {
   toolIds: string[];
 }): Promise<Workflow | null> {
   try {
-    const newWorkflow = await prisma.$transaction(async (tx: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
+    const newWorkflow = await prisma.$transaction(async (tx) => {
       const wf = await tx.workflow.create({
         data: {
           title: data.title,
@@ -235,7 +235,7 @@ export async function getApiKeys(): Promise<ApiKey[]> {
     const rows = await prisma.apiKey.findMany({
       orderBy: { createdAt: "desc" }
     });
-    return rows.map((r: import("@prisma/client").ApiKey) =>
+    return rows.map((r) =>
    ({
       id: r.id,
       name: r.name,
