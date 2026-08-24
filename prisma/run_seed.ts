@@ -130,6 +130,26 @@ Maintain a highly creative, immersive tone.`
   // SKILLS (Type: skill)
   // ==========================================
   {
+    title: "Git Master",
+    type: "skill",
+    description: "Automates complex git workflows and resolves merge conflicts autonomously.",
+    tags_array: ["git", "vcs", "automation", "workflow"],
+    markdown_content: `### Git Master Skill
+
+A production-grade agent skill designed to resolve git merge conflicts and orchestrate branching models.
+
+#### Key Features:
+- Resolves complex 3-way merge conflicts using semantic code understanding.
+- Automates squash-and-merge rebasing workflows.
+- Detects regression patterns before committing code.
+
+#### Usage:
+\`\`\`bash
+agy invoke git-master --repo . --resolve-conflicts
+\`\`\`
+`
+  },
+  {
     title: "BeautifulSoup Web Scraper",
     type: "skill",
     description: "Python script to fetch a URL, bypass basic bot-protection, and extract all H2 headers and paragraph text.",
@@ -2545,20 +2565,118 @@ def test_hypothesis(bug_report):
 async function main() {
   console.log('Starting DB seed process using Neon serverless fetch...');
 
+  // Ensure schema tables exist
+  await sql`
+    CREATE TABLE IF NOT EXISTS tools (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      title TEXT NOT NULL,
+      type TEXT NOT NULL,
+      description TEXT,
+      "markdownContent" TEXT,
+      tags TEXT[] DEFAULT ARRAY[]::TEXT[],
+      "createdAt" TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+      "updatedAt" TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    );
+  `;
+  await sql`
+    CREATE TABLE IF NOT EXISTS workflows (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      title TEXT NOT NULL,
+      description TEXT,
+      "createdAt" TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+      "updatedAt" TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    );
+  `;
+  await sql`
+    CREATE TABLE IF NOT EXISTS workflow_tools (
+      "workflowId" UUID NOT NULL REFERENCES workflows(id) ON DELETE CASCADE,
+      "toolId" UUID NOT NULL REFERENCES tools(id) ON DELETE CASCADE,
+      "stepOrder" INT NOT NULL,
+      "createdAt" TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+      PRIMARY KEY ("workflowId", "stepOrder")
+    );
+  `;
+  await sql`
+    CREATE TABLE IF NOT EXISTS api_keys (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      name TEXT NOT NULL,
+      hash TEXT UNIQUE NOT NULL,
+      prefix TEXT NOT NULL,
+      "createdAt" TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+      "lastUsed" TIMESTAMP WITH TIME ZONE,
+      active BOOLEAN DEFAULT TRUE
+    );
+  `;
+  await sql`
+    CREATE TABLE IF NOT EXISTS comments (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      content TEXT NOT NULL,
+      "createdAt" TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    );
+  `;
+
+  await sql`DELETE FROM workflow_tools`;
   await sql`DELETE FROM workflows`;
   console.log('Cleaned existing workflows table.');
   await sql`DELETE FROM tools`;
   console.log('Cleaned existing tools table.');
 
-  // 1. Insert the high-quality base items
-  for (const tool of seedData) {
-    await sql`
-      INSERT INTO tools (title, type, description, "markdownContent", tags, "updatedAt")
-      VALUES (${tool.title}, ${tool.type}, ${tool.description}, ${tool.markdown_content}, ${tool.tags_array}, NOW())
-    `;
+  // 1. Insert base items in chunks to avoid HTTP rate limits
+  const chunkSize = 15;
+  for (let i = 0; i < seedData.length; i += chunkSize) {
+    const chunk = seedData.slice(i, i + chunkSize);
+    await Promise.all(
+      chunk.map((tool) =>
+        sql`
+          INSERT INTO tools (title, type, description, "markdownContent", tags, "updatedAt")
+          VALUES (${tool.title}, ${tool.type}, ${tool.description}, ${tool.markdown_content}, ${tool.tags_array}, NOW())
+        `
+      )
+    );
   }
 
   console.log(`Database seeded successfully with ${seedData.length} unique items!`);
+
+  // 2. Fetch inserted tools to link workflows
+  const toolsResult = await sql`SELECT id, title, type FROM tools`;
+  const toolMap = new Map(toolsResult.map((t: any) => [t.title, t.id] as [string, string])); // eslint-disable-line @typescript-eslint/no-explicit-any
+
+  // Seed sample workflows
+  const workflow1 = await sql`
+    INSERT INTO workflows (title, description, "updatedAt")
+    VALUES ('Full-Stack Web App Pipeline', 'Chains Figma UI conversion, Neon Postgres connector, and Git automated commit.', NOW())
+    RETURNING id;
+  `;
+  const w1Id = workflow1[0].id;
+  const t1 = toolMap.get("Senior Frontend Architect") || toolsResult[0]?.id;
+  const t2 = toolMap.get("Neon Postgres Database MCP") || toolsResult[1]?.id;
+  const t3 = toolMap.get("GitHub Auto-Committer") || toolsResult[2]?.id;
+
+  if (t1 && t2 && t3) {
+    await sql`
+      INSERT INTO workflow_tools ("workflowId", "toolId", "stepOrder")
+      VALUES (${w1Id}, ${t1}, 1), (${w1Id}, ${t2}, 2), (${w1Id}, ${t3}, 3);
+    `;
+  }
+
+  const workflow2 = await sql`
+    INSERT INTO workflows (title, description, "updatedAt")
+    VALUES ('AI Code Audit & Security Suite', 'Sequentially audits codebase security, generates rate limiters, and logs Linear tickets.', NOW())
+    RETURNING id;
+  `;
+  const w2Id = workflow2[0].id;
+  const t4 = toolMap.get("Zero-Day Security Auditor") || toolsResult[3]?.id;
+  const t5 = toolMap.get("Express Rate Limiter Middleware") || toolsResult[4]?.id;
+  const t6 = toolMap.get("Linear Ticket Creator") || toolsResult[5]?.id;
+
+  if (t4 && t5 && t6) {
+    await sql`
+      INSERT INTO workflow_tools ("workflowId", "toolId", "stepOrder")
+      VALUES (${w2Id}, ${t4}, 1), (${w2Id}, ${t5}, 2), (${w2Id}, ${t6}, 3);
+    `;
+  }
+
+  console.log("Sample workflows created successfully!");
 }
 
 main()

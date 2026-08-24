@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f8f9fa;
-  --foreground: #171717;
+  --background: #090a0f;
+  --foreground: #ededed;
 }
 
 @theme inline {
@@ -13,7 +13,7 @@
 }
 
 .dark {
-  --background: #020203;
+  --background: #090a0f;
   --foreground: #ededed;
 }
 
@@ -21,4 +21,162 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  overflow-x: hidden;
 }
+
+/* Animated Starfield Background */
+.starfield-container {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background: radial-gradient(ellipse at center, #1e2c3d 0%, #111a26 40%, #090a0f 85%, #040508 100%);
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+#stars {
+  width: 1px;
+  height: 1px;
+  background: transparent;
+  box-shadow:
+    120px 400px #fff, 340px 1200px #fff, 560px 250px #fff, 780px 1600px #fff,
+    910px 800px #fff, 1150px 300px #fff, 1380px 1450px #fff, 1590px 700px #fff,
+    1750px 1800px #fff, 250px 950px #fff, 480px 1750px #fff, 670px 500px #fff,
+    890px 1300px #fff, 1050px 100px #fff, 1270px 1850px #fff, 1490px 450px #fff,
+    1680px 1150px #fff, 1850px 600px #fff, 150px 1500px #fff, 390px 100px #fff,
+    610px 1100px #fff, 830px 350px #fff, 1020px 1650px #fff, 1220px 750px #fff,
+    1440px 1900px #fff, 1630px 200px #fff, 1810px 1250px #fff, 70px 700px #fff,
+    290px 1800px #fff, 520px 650px #fff, 730px 1400px #fff, 940px 200px #fff,
+    1180px 1100px #fff, 1390px 50px #fff, 1570px 1550px #fff, 1790px 900px #fff;
+  animation: animStar 60s linear infinite;
+}
+
+#stars2 {
+  width: 2px;
+  height: 2px;
+  background: transparent;
+  box-shadow:
+    200px 300px rgba(255, 255, 255, 0.8), 450px 900px rgba(255, 255, 255, 0.8),
+    720px 1400px rgba(255, 255, 255, 0.8), 980px 400px rgba(255, 255, 255, 0.8),
+    1250px 1700px rgba(255, 255, 255, 0.8), 1520px 800px rgba(255, 255, 255, 0.8),
+    1780px 200px rgba(255, 255, 255, 0.8), 100px 1100px rgba(255, 255, 255, 0.8),
+    360px 1600px rgba(255, 255, 255, 0.8), 600px 100px rgba(255, 255, 255, 0.8),
+    840px 1000px rgba(255, 255, 255, 0.8), 1100px 500px rgba(255, 255, 255, 0.8),
+    1340px 1300px rgba(255, 255, 255, 0.8), 1610px 1900px rgba(255, 255, 255, 0.8),
+    1870px 1050px rgba(255, 255, 255, 0.8);
+  animation: animStar 100s linear infinite;
+}
+
+#stars3 {
+  width: 3px;
+  height: 3px;
+  background: transparent;
+  box-shadow:
+    300px 600px rgba(255, 255, 255, 0.9), 800px 1200px rgba(255, 255, 255, 0.9),
+    1300px 200px rgba(255, 255, 255, 0.9), 1700px 1500px rgba(255, 255, 255, 0.9),
+    500px 1800px rgba(255, 255, 255, 0.9), 1100px 800px rgba(255, 255, 255, 0.9);
+  animation: animStar 140s linear infinite;
+}
+
+#stars:after, #stars2:after, #stars3:after {
+  content: " ";
+  position: absolute;
+  top: 2000px;
+  background: transparent;
+}
+
+#stars:after {
+  width: 1px;
+  height: 1px;
+  box-shadow: inherit;
+}
+
+#stars2:after {
+  width: 2px;
+  height: 2px;
+  box-shadow: inherit;
+}
+
+#stars3:after {
+  width: 3px;
+  height: 3px;
+  box-shadow: inherit;
+}
+
+@keyframes animStar {
+  from {
+    transform: translateY(0px);
+  }
+  to {
+    transform: translateY(-2000px);
+  }
+}
+
+/* Responsive Animated Gradient Card Border & Glow Effect */
+.glow-card {
+  position: relative;
+  z-index: 1;
+}
+
+.glow-card::before {
+  content: '';
+  position: absolute;
+  inset: -1.5px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, #e81cff 0%, #40c9ff 100%);
+  z-index: -2;
+  pointer-events: none;
+  opacity: 0.45;
+  transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.5s ease;
+}
+
+.glow-card::after {
+  content: "";
+  z-index: -1;
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(135deg, #fc00ff 0%, #00dbde 100%);
+  transform: translate3d(0, 0, 0) scale(0.96);
+  filter: blur(14px);
+  opacity: 0.3;
+  transition: filter 0.5s ease, opacity 0.5s ease, transform 0.5s ease;
+  pointer-events: none;
+}
+
+.glow-card-prompt::before {
+  background: linear-gradient(135deg, #e81cff 0%, #ec4899 50%, #40c9ff 100%);
+}
+.glow-card-prompt::after {
+  background: linear-gradient(135deg, #fc00ff 0%, #ec4899 50%, #00dbde 100%);
+}
+
+.glow-card-skill::before {
+  background: linear-gradient(135deg, #40c9ff 0%, #3b82f6 50%, #00dbde 100%);
+}
+.glow-card-skill::after {
+  background: linear-gradient(135deg, #00dbde 0%, #3b82f6 50%, #e81cff 100%);
+}
+
+.glow-card-mcp::before {
+  background: linear-gradient(135deg, #10b981 0%, #00dbde 50%, #40c9ff 100%);
+}
+.glow-card-mcp::after {
+  background: linear-gradient(135deg, #00dbde 0%, #10b981 50%, #fc00ff 100%);
+}
+
+.glow-card:hover::before {
+  opacity: 0.95;
+  transform: scale(1.03);
+}
+
+.glow-card:hover::after {
+  filter: blur(22px);
+  opacity: 0.75;
+  transform: scale(1.02);
+}
+
+
+

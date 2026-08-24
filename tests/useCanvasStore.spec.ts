@@ -37,7 +37,10 @@ test.describe('useCanvasStore', () => {
       title: 'Tool 1',
       type: 'prompt',
       description: 'Test description',
-      updatedAt: new Date().toISOString(), tags: [], markdownContent: "", createdAt: new Date().toISOString()
+      tags: [],
+      markdownContent: null,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
     };
 
     store.addToCart(mockTool);
@@ -52,7 +55,10 @@ test.describe('useCanvasStore', () => {
       title: 'Tool 1',
       type: 'prompt',
       description: 'Test description',
-      updatedAt: new Date().toISOString(), tags: [], markdownContent: "", createdAt: new Date().toISOString()
+      tags: [],
+      markdownContent: null,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
     };
 
     store.addToCart(mockTool);
@@ -68,14 +74,20 @@ test.describe('useCanvasStore', () => {
       title: 'Tool 1',
       type: 'prompt',
       description: 'Test description',
-      updatedAt: new Date().toISOString(), tags: [], markdownContent: "", createdAt: new Date().toISOString()
+      tags: [],
+      markdownContent: null,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
     };
     const mockTool2: ToolData = {
       id: 'tool-2',
       title: 'Tool 2',
       type: 'skill',
       description: 'Test description 2',
-      updatedAt: new Date().toISOString(), tags: [], markdownContent: "", createdAt: new Date().toISOString()
+      tags: [],
+      markdownContent: null,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
     };
 
     store.addToCart(mockTool1);
@@ -94,7 +106,10 @@ test.describe('useCanvasStore', () => {
       title: 'Tool 1',
       type: 'prompt',
       description: 'Test description',
-      updatedAt: new Date().toISOString(), tags: [], markdownContent: "", createdAt: new Date().toISOString()
+      tags: [],
+      markdownContent: null,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
     };
 
     store.addToCart(mockTool1);
