@@ -150,7 +150,7 @@ async function processMcpRequest(
         const dbTools = await prisma.tool.findMany();
 
         // Expose prompt and connector tools as executable schemas (or skills run locally)
-        const mcpTools = dbTools.map((tool: Tool) => ({
+        const mcpTools = dbTools.map((tool) => ({
           name: normalizeName(tool.title),
           description: tool.description || "Execute " + tool.title + " from Agent Tool Matrix.",
           inputSchema: {
@@ -184,7 +184,7 @@ async function processMcpRequest(
 
         // Fetch only id and title for matching to reduce memory footprint
         const partialTools = await prisma.tool.findMany({ select: { id: true, title: true } });
-        const match = partialTools.find((t: { id: string; title: string }) => normalizeName(t.title) === name);
+        const match = partialTools.find((t) => normalizeName(t.title) === name);
         if (!match) throw new Error("Tool not found");
 
         const tool = await prisma.tool.findUnique({ where: { id: match.id } });
@@ -222,8 +222,8 @@ async function processMcpRequest(
 
         // Expose Prompt & Skill files as resources for ingestion
         const mcpResources = dbTools
-          .filter((t: Tool) => t.type === "skill" || t.type === "prompt")
-          .map((tool: Tool) => ({
+          .filter((t) => t.type === "skill" || t.type === "prompt")
+          .map((tool) => ({
             uri: "atm://tools/" + tool.id,
             name: tool.title,
             description: tool.description || "Raw source for " + tool.title,
@@ -275,7 +275,7 @@ async function processMcpRequest(
       try {
         const dbTools = await prisma.tool.findMany({ where: { type: "prompt" } });
 
-        const mcpPrompts = dbTools.map((tool: Tool) => ({
+        const mcpPrompts = dbTools.map((tool) => ({
           name: normalizeName(tool.title),
           description: tool.description || "Prompt template: " + tool.title,
           arguments: [
