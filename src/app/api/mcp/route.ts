@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { Tool } from "@prisma/client";
 import { validateApiKey } from "@/lib/auth-api";
 import crypto from "crypto";
 
