@@ -3,13 +3,15 @@ import Link from "next/link";
 import { MessageSquare, ArrowLeft, User, Clock } from "lucide-react";
 import CommentForm from "@/components/CommentForm";
 
+import { Comment } from "@prisma/client";
+
 export const metadata = {
-  title: "Feedback & Comments - ATM",
-  description: "Share feedback or comments on the Agent Tool Matrix.",
+  title: "Feedback & Discussions - ATM",
+  description: "Share feedback or discussions on the Agent Tool Matrix.",
 };
 
 export default async function CommentPage() {
-  let comments: { id: string; content: string; createdAt: Date }[] = [];
+  let comments: Comment[] = [];
   try {
     comments = await prisma.comment.findMany({
       orderBy: {

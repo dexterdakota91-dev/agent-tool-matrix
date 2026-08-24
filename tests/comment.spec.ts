@@ -58,6 +58,8 @@ test.describe('Agent Tool Matrix Comment & Feedback Flow', () => {
 
     // Verify button is now enabled
     const submitBtn = page.getByRole('button', { name: 'Submit Comment' });
+    await submitBtn.waitFor({ state: "visible" });
+    await page.waitForTimeout(500);
     await expect(submitBtn).toBeEnabled();
 
     // Click submit
