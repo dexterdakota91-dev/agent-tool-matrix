@@ -34,7 +34,7 @@ test.describe('Agent Tool Matrix E2E Test Suite', () => {
     await searchInput.fill('Git Master');
 
     // Check that Git Master card is visible
-    const card = page.locator('h3', { hasText: 'Git Master' }).first();
+    const card = page.getByRole('heading', { name: 'Git Master' }).first();
     await expect(card).toBeVisible();
   });
 
@@ -44,7 +44,7 @@ test.describe('Agent Tool Matrix E2E Test Suite', () => {
     await searchInput.fill('Git Master');
 
     // Click on Git Master card
-    const card = page.locator('h3', { hasText: 'Git Master' }).first();
+    const card = page.getByRole('heading', { name: 'Git Master' }).first();
     await card.click();
 
     // Verify detail panel elements
@@ -73,7 +73,7 @@ test.describe('Agent Tool Matrix E2E Test Suite', () => {
     await builderTab.click();
 
     // 2. Add Git Master to Pipeline from the side node list
-    const item = page.locator('div.rounded-xl', { hasText: 'Git Master' }).first();
+    const item = page.locator('div.rounded-xl').filter({ hasText: 'Git Master' }).first();
     await expect(item).toBeVisible();
     const addBtn = item.getByRole('button', { name: 'Add Step' });
     await expect(addBtn).toBeVisible();
@@ -121,7 +121,7 @@ test.describe('Agent Tool Matrix E2E Test Suite', () => {
 
   test('Compilation Cart flow works correctly', async ({ page }) => {
     // 1. Click Git Master to open details view
-    const card = page.locator('h3', { hasText: 'Git Master' }).first();
+    const card = page.getByRole('heading', { name: 'Git Master' }).first();
     await card.click();
 
     // 2. Click "Add to Cart"

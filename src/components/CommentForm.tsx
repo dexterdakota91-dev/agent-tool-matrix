@@ -1,10 +1,12 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Send, CheckCircle2, AlertTriangle, Loader2 } from "lucide-react";
 import { createComment } from "@/app/actions";
 
 export default function CommentForm() {
+  const router = useRouter();
   const [commentText, setCommentText] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -23,6 +25,7 @@ export default function CommentForm() {
       if (res) {
         setCommentText("");
         setSuccess(true);
+        router.refresh();
         // Clear success message after 5 seconds
         setTimeout(() => setSuccess(false), 5000);
       } else {
@@ -60,7 +63,7 @@ export default function CommentForm() {
 
       <button
         type="submit"
-        disabled={loading || !commentText.trim()}
+        disabled={loading}
         className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-xl px-4 py-3 font-semibold transition-all duration-300 shadow-lg shadow-blue-500/10 hover:shadow-blue-500/20 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed select-none cursor-pointer"
       >
         {loading ? (

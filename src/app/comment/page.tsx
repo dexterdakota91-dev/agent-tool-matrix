@@ -1,4 +1,4 @@
-﻿import { prisma } from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { MessageSquare, ArrowLeft, User, Clock } from "lucide-react";
 import CommentForm from "@/components/CommentForm";
@@ -10,6 +10,7 @@ export const metadata = {
 
 export default async function CommentPage() {
   let comments: any[] = [];
+
   try {
     comments = await prisma.comment.findMany({
       orderBy: {

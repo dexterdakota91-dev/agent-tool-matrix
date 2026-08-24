@@ -133,7 +133,7 @@ function ToolCardInner({
   }
 
   // Rise effect (y-translation) on hover/selected
-  const liftY = isSelected ? 0 : (canHoverExpand && isHovered ? -6 : 0);
+  const liftY = 0;
 
   // Dynamic shadow offsets based on floating height
   let shadowStyle = "";
@@ -444,9 +444,10 @@ function ToolCardInner({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       className={`
-        relative cursor-pointer select-none group
+        relative cursor-pointer select-none group origin-top
+        glow-card glow-card-${tool.type}
         rounded-xl p-3
-        backdrop-blur-md bg-white/5 dark:bg-zinc-900/60
+        backdrop-blur-md bg-zinc-950/75 dark:bg-zinc-900/80
         border shadow-md
         flex flex-col justify-between
         w-full ${heightClass}

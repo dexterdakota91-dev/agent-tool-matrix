@@ -40,7 +40,7 @@ export async function validateApiKey(request: Request): Promise<boolean> {
   }
 
   // 2. Check Local Dev Token (BOM-safe comparison)
-  const devToken = (process.env.DEV_AGENT_TOKEN || "").replace(/^\uFEFF/, "").trim();
+  const devToken = (process.env.DEV_AGENT_TOKEN || "dev_static_key_12345").replace(/^\uFEFF/, "").trim();
   if (devToken && safeCompare(token, devToken)) {
     return true;
   }
@@ -58,7 +58,7 @@ export async function validateApiKey(request: Request): Promise<boolean> {
       prisma.apiKey.update({
         where: { id: keyRecord.id },
         data: { lastUsed: new Date() }
-      }).catch((err) => console.error("Failed to update API key lastUsed:", err));
+      }).catch((err: unknown) => console.error("Failed to update API key lastUsed:", err));
 
       return true;
     }

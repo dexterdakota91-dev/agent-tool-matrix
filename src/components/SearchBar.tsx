@@ -28,14 +28,14 @@ export function SearchBar() {
   }, [localQuery, setSearchQuery, searchQuery]);
 
   return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col gap-2 px-2.5 py-2.5 rounded-2xl bg-white/5 dark:bg-black/35 backdrop-blur-md border border-white/10 shadow-lg z-50 relative">
-      {/* Top Line: Integrated Type Tabs Segmented Control */}
-      <div className="flex bg-white/5 dark:bg-black/20 p-0.5 rounded-xl border border-white/5 w-full">
+    <div className="w-full max-w-3xl mx-auto flex flex-col sm:flex-row items-center gap-3 p-2.5 rounded-xl bg-white/5 dark:bg-black/40 border border-white/10 min-w-0">
+      {/* Integrated Type Tabs Segmented Control */}
+      <div className="flex bg-white/5 dark:bg-black/30 p-1 rounded-lg border border-white/5 w-full sm:w-auto flex-shrink-0">
         {(["all", "prompt", "skill", "mcp"] as const).map((type) => (
           <button
             key={type}
             onClick={() => setSelectedType(type)}
-            className={`flex-1 py-1.5 rounded-lg text-[10px] font-semibold transition-all duration-200 ${
+            className={`px-3 py-1.5 rounded-md text-[10px] font-semibold transition-all duration-200 cursor-pointer ${
               selectedType === type
                 ? "bg-white text-black shadow-sm font-bold"
                 : "hover:bg-white/5 text-foreground/70 hover:text-foreground"
@@ -46,8 +46,8 @@ export function SearchBar() {
         ))}
       </div>
 
-      {/* Bottom Line: Search Input Line */}
-      <div className="flex items-center gap-2 px-2 py-1.5 bg-white/5 dark:bg-black/10 border border-white/5 rounded-xl min-w-0">
+      {/* Search Input Line */}
+      <div className="flex items-center gap-2 px-3 py-1.5 bg-white/5 dark:bg-black/20 border border-white/5 rounded-lg w-full min-w-0">
         <Search className="w-4 h-4 opacity-50 flex-shrink-0" />
         <input
           type="text"
