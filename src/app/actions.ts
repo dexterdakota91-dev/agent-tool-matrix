@@ -1,7 +1,16 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import { neon } from "@neondatabase/serverless";
 import crypto from "crypto";
+
+const connectionString = (process.env.DATABASE_URL_UNPOOLED || process.env.DATABASE_URL || "")
+  .replace(/^\uFEFF/, "")
+  .replace(/channel_binding=require&?/g, "")
+  .replace(/^[\\\"\']+|[\\\"\']+$/g, "")
+  .trim();
+
+const sql = neon(connectionString);
 
 export interface Tool {
   id: string;
@@ -33,23 +42,41 @@ export interface Workflow {
 
 export async function getTools(): Promise<Tool[]> {
   try {
-    const rows = await prisma.tool.findMany({
-      orderBy: { createdAt: "desc" }
-    });
-    return rows.map((r) =>
-   ({
+    const rows = await sql`
+      SELECT id, title, type, description, "markdownContent", tags, "createdAt", "updatedAt"
+      FROM tools
+      ORDER BY "createdAt" DESC
+    `;
+    return rows.map((r: any) => ({ // eslint-disable-line @typescript-eslint/no-explicit-any
       id: r.id,
       title: r.title,
       type: r.type,
       description: r.description,
       markdownContent: r.markdownContent,
       tags: r.tags || [],
-      createdAt: r.createdAt.toISOString(),
-      updatedAt: r.updatedAt.toISOString(),
+      createdAt: new Date(r.createdAt).toISOString(),
+      updatedAt: new Date(r.updatedAt).toISOString(),
     }));
   } catch (error) {
-    console.error("Failed to get tools:", error);
-    return [];
+    console.error("Direct Neon HTTP query failed, falling back to prisma:", error);
+    try {
+      const rows = await prisma.tool.findMany({
+        orderBy: { createdAt: "desc" }
+      });
+      return rows.map((r) => ({
+        id: r.id,
+        title: r.title,
+        type: r.type,
+        description: r.description,
+        markdownContent: r.markdownContent,
+        tags: r.tags || [],
+        createdAt: r.createdAt.toISOString(),
+        updatedAt: r.updatedAt.toISOString(),
+      }));
+    } catch (err) {
+      console.error("Failed to get tools:", err);
+      return [];
+    }
   }
 }
 
@@ -137,35 +164,69 @@ export async function deleteTool(id: string): Promise<{ success: boolean }> {
 
 export async function getWorkflows(): Promise<Workflow[]> {
   try {
-    const workflows = await prisma.workflow.findMany({
-      include: {
-        tools: {
-          orderBy: { stepOrder: "asc" },
-          include: {
-            tool: true
-          }
-        }
-      },
-      orderBy: { createdAt: "desc" }
-    });
+    const rows = await sql`
+      SELECT 
+        w.id, w.title, w.description, w."createdAt", w."updatedAt",
+        COALESCE(
+          json_agg(
+            json_build_object(
+              'workflowId', wt."workflowId",
+              'toolId', wt."toolId",
+              'stepOrder', wt."stepOrder",
+              'toolTitle', t.title,
+              'toolType', t.type
+            ) ORDER BY wt."stepOrder" ASC
+          ) FILTER (WHERE wt."toolId" IS NOT NULL),
+          '[]'
+        ) as tools
+      FROM workflows w
+      LEFT JOIN workflow_tools wt ON w.id = wt."workflowId"
+      LEFT JOIN tools t ON wt."toolId" = t.id
+      GROUP BY w.id
+      ORDER BY w."createdAt" DESC
+    `;
 
-    return workflows.map((w: any) => ({ // eslint-disable-line @typescript-eslint/no-explicit-any
+    return rows.map((w: any) => ({ // eslint-disable-line @typescript-eslint/no-explicit-any
       id: w.id,
       title: w.title,
       description: w.description,
-      createdAt: w.createdAt.toISOString(),
-      updatedAt: w.updatedAt.toISOString(),
-      tools: w.tools.map((wt: any) => ({ // eslint-disable-line @typescript-eslint/no-explicit-any
-        workflowId: wt.workflowId,
-        toolId: wt.toolId,
-        stepOrder: wt.stepOrder,
-        toolTitle: wt.tool.title,
-        toolType: wt.tool.type,
-      })),
+      createdAt: new Date(w.createdAt).toISOString(),
+      updatedAt: new Date(w.updatedAt).toISOString(),
+      tools: Array.isArray(w.tools) ? w.tools : typeof w.tools === 'string' ? JSON.parse(w.tools) : [],
     }));
   } catch (error) {
-    console.error("Failed to get workflows:", error);
-    return [];
+    console.error("Direct Neon HTTP query failed for workflows, falling back to prisma:", error);
+    try {
+      const workflows = await prisma.workflow.findMany({
+        include: {
+          tools: {
+            orderBy: { stepOrder: "asc" },
+            include: {
+              tool: true
+            }
+          }
+        },
+        orderBy: { createdAt: "desc" }
+      });
+
+      return workflows.map((w: any) => ({ // eslint-disable-line @typescript-eslint/no-explicit-any
+        id: w.id,
+        title: w.title,
+        description: w.description,
+        createdAt: w.createdAt.toISOString(),
+        updatedAt: w.updatedAt.toISOString(),
+        tools: w.tools.map((wt: any) => ({ // eslint-disable-line @typescript-eslint/no-explicit-any
+          workflowId: wt.workflowId,
+          toolId: wt.toolId,
+          stepOrder: wt.stepOrder,
+          toolTitle: wt.tool.title,
+          toolType: wt.tool.type,
+        })),
+      }));
+    } catch (err) {
+      console.error("Failed to get workflows:", err);
+      return [];
+    }
   }
 }
 
@@ -232,21 +293,37 @@ export interface ApiKey {
 
 export async function getApiKeys(): Promise<ApiKey[]> {
   try {
-    const rows = await prisma.apiKey.findMany({
-      orderBy: { createdAt: "desc" }
-    });
-    return rows.map((r) =>
-   ({
+    const rows = await sql`
+      SELECT id, name, prefix, "createdAt", "lastUsed", active
+      FROM api_keys
+      ORDER BY "createdAt" DESC
+    `;
+    return rows.map((r: any) => ({ // eslint-disable-line @typescript-eslint/no-explicit-any
       id: r.id,
       name: r.name,
       prefix: r.prefix,
-      createdAt: r.createdAt.toISOString(),
-      lastUsed: r.lastUsed ? r.lastUsed.toISOString() : null,
+      createdAt: new Date(r.createdAt).toISOString(),
+      lastUsed: r.lastUsed ? new Date(r.lastUsed).toISOString() : null,
       active: r.active,
     }));
   } catch (error) {
-    console.error("Failed to get API keys:", error);
-    return [];
+    console.error("Direct Neon HTTP query failed for api keys, falling back to prisma:", error);
+    try {
+      const rows = await prisma.apiKey.findMany({
+        orderBy: { createdAt: "desc" }
+      });
+      return rows.map((r) => ({
+        id: r.id,
+        name: r.name,
+        prefix: r.prefix,
+        createdAt: r.createdAt.toISOString(),
+        lastUsed: r.lastUsed ? r.lastUsed.toISOString() : null,
+        active: r.active,
+      }));
+    } catch (err) {
+      console.error("Failed to get API keys:", err);
+      return [];
+    }
   }
 }
 
