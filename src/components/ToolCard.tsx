@@ -99,7 +99,7 @@ function ToolCardInner({
   let cardFilter = "grayscale(0%) brightness(1)";
 
   // Card height class
-  const heightClass = isExpanded ? "h-[120px]" : "h-[74px]";
+  const heightClass = isExpanded ? "h-[130px]" : "h-[76px]";
 
   if (isSelected) {
     cardScale = 1;
@@ -448,6 +448,7 @@ function ToolCardInner({
         flex flex-col justify-between
         w-full ${heightClass}
         ${borderMap[tool.type]}
+        transition-[height,box-shadow,border-color,background-color] duration-300 ease-out
         focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30
       `}
       style={{
@@ -484,10 +485,10 @@ function ToolCardInner({
           {isExpanded && tool.description && (
             <motion.p
               initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 0.6, height: "auto" }}
+              animate={{ opacity: 0.7, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.2 }}
-              className="text-[10px] text-foreground leading-snug mt-1 line-clamp-2 overflow-hidden"
+              transition={{ duration: 0.25, ease: "easeOut" }}
+              className="text-[10px] text-foreground leading-snug mt-1.5 line-clamp-2 overflow-hidden"
             >
               {tool.description}
             </motion.p>

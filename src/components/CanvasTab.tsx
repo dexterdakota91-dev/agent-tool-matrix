@@ -68,6 +68,22 @@ export function CanvasTab({
     return scored;
   }, [filteredTools, selectedTool]);
 
+  const desktopColumns = useMemo(() => {
+    const cols: Tool[][] = [];
+    for (let i = 0; i < filteredTools.length; i += 3) {
+      cols.push(filteredTools.slice(i, i + 3));
+    }
+    return cols;
+  }, [filteredTools]);
+
+  const relevanceDesktopColumns = useMemo(() => {
+    const cols: { tool: Tool; score: number }[][] = [];
+    for (let i = 0; i < relevanceSortedTools.length; i += 3) {
+      cols.push(relevanceSortedTools.slice(i, i + 3));
+    }
+    return cols;
+  }, [relevanceSortedTools]);
+
   return (
     <motion.div
       key="canvas"
@@ -142,7 +158,7 @@ export function CanvasTab({
               </button>
             </motion.div>
 
-            {/* RIGHT 2/3: Relevance-sorted cards (most relevant near the left) */}
+            {/* RIGHT 2/3: Relevance-sorted cards in column flow */}
             <motion.div
               onClick={(e) => {
                 if (e.target === e.currentTarget) setSelectedTool(null);
@@ -152,14 +168,35 @@ export function CanvasTab({
               transition={{ delay: 0.05, duration: 0.6 }}
               className="flex-grow w-full md:w-auto h-auto md:h-full min-h-0 overflow-y-auto md:overflow-y-hidden md:overflow-x-auto pt-1 pb-2 no-scrollbar"
             >
-              <div
-                onClick={(e) => {
-                  if (e.target === e.currentTarget) setSelectedTool(null);
-                }}
-                className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-none md:grid-flow-col md:grid-rows-3 items-start gap-3 sm:gap-4 auto-rows-max md:auto-cols-max h-full min-h-0 pt-2.5 justify-items-center md:justify-items-start"
-              >
+              {/* Desktop: Columns of 3 items */}
+              <div className="hidden md:flex flex-row items-start gap-3.5 h-full pt-1.5">
+                {relevanceDesktopColumns.map((col, colIdx) => (
+                  <div key={colIdx} className="flex flex-col gap-3.5 w-[185px] shrink-0">
+                    {col.map(({ tool: t, score }) => (
+                      <ToolCard
+                        key={t.id}
+                        tool={t}
+                        onClick={() => {
+                          setSelectedTool(t);
+                        }}
+                        relevanceScore={score > 0 ? score : 0.08}
+                        isDirectMatch={
+                          searchQuery.trim() ? directMatchIds.has(t.id) : undefined
+                        }
+                        isRelatedMatch={
+                          searchQuery.trim() ? relatedMatchIds.has(t.id) : undefined
+                        }
+                        hasSearch={searchQuery.trim().length > 0}
+                      />
+                    ))}
+                  </div>
+                ))}
+              </div>
+
+              {/* Mobile / Tablet grid */}
+              <div className="grid md:hidden grid-cols-1 sm:grid-cols-2 gap-3 pt-2.5 justify-items-center">
                 {relevanceSortedTools.map(({ tool: t, score }) => (
-                  <div key={t.id} className="w-full max-w-[280px] sm:max-w-none md:w-[175px] shrink-0">
+                  <div key={t.id} className="w-full max-w-[280px] sm:max-w-none shrink-0">
                     <ToolCard
                       tool={t}
                       onClick={() => {
@@ -180,32 +217,60 @@ export function CanvasTab({
             </motion.div>
           </motion.div>
         ) : (
-          /* ========== DEFAULT MODE: Dense horizontal-scrolling grid on desktop, responsive centered grid on mobile ========== */
+          /* ========== DEFAULT MODE: 3-row Column Flow on Desktop, Responsive Grid on Mobile ========== */
           <motion.div
             key="default-mode"
             onClick={(e) => {
               if (e.target === e.currentTarget) setSelectedTool(null);
             }}
-            className="flex-grow grid grid-cols-1 sm:grid-cols-2 md:grid-cols-none md:grid-flow-col md:grid-rows-3 items-start gap-3 sm:gap-4 auto-rows-max md:auto-cols-max overflow-y-auto md:overflow-y-hidden md:overflow-x-auto pt-3 pb-8 px-1 sm:px-2 md:pt-6 md:pb-6 md:px-3 min-h-0 w-full relative z-10 justify-items-center md:justify-items-start no-scrollbar"
+            className="flex-grow flex flex-col min-h-0 w-full relative z-10 overflow-hidden"
           >
-            {filteredTools.map((tool, idx) => (
-              <div key={tool.id} className="w-full max-w-[280px] sm:max-w-none md:w-[175px] shrink-0">
-                <ToolCard
-                  tool={tool}
-                  delay={Math.min(idx * 0.005, 0.2)}
-                  onClick={() => {
-                    setSelectedTool(tool);
-                  }}
-                  isDirectMatch={
-                    searchQuery.trim() ? directMatchIds.has(tool.id) : undefined
-                  }
-                  isRelatedMatch={
-                    searchQuery.trim() ? relatedMatchIds.has(tool.id) : undefined
-                  }
-                  hasSearch={searchQuery.trim().length > 0}
-                />
-              </div>
-            ))}
+            {/* Desktop: Columns of 3 items that bounce out of the way smoothly on expand */}
+            <div className="hidden md:flex flex-row items-start gap-3.5 h-full overflow-x-auto overflow-y-hidden pt-3 pb-6 px-3 no-scrollbar">
+              {desktopColumns.map((col, colIdx) => (
+                <div key={colIdx} className="flex flex-col gap-3.5 w-[185px] shrink-0">
+                  {col.map((tool, idx) => (
+                    <ToolCard
+                      key={tool.id}
+                      tool={tool}
+                      delay={Math.min((colIdx * 3 + idx) * 0.005, 0.2)}
+                      onClick={() => {
+                        setSelectedTool(tool);
+                      }}
+                      isDirectMatch={
+                        searchQuery.trim() ? directMatchIds.has(tool.id) : undefined
+                      }
+                      isRelatedMatch={
+                        searchQuery.trim() ? relatedMatchIds.has(tool.id) : undefined
+                      }
+                      hasSearch={searchQuery.trim().length > 0}
+                    />
+                  ))}
+                </div>
+              ))}
+            </div>
+
+            {/* Mobile / Tablet: Responsive vertical centered feed */}
+            <div className="flex md:hidden flex-col sm:grid sm:grid-cols-2 gap-3 overflow-y-auto pt-3 pb-8 px-2 justify-items-center no-scrollbar">
+              {filteredTools.map((tool, idx) => (
+                <div key={tool.id} className="w-full max-w-[280px] sm:max-w-none shrink-0">
+                  <ToolCard
+                    tool={tool}
+                    delay={Math.min(idx * 0.005, 0.2)}
+                    onClick={() => {
+                      setSelectedTool(tool);
+                    }}
+                    isDirectMatch={
+                      searchQuery.trim() ? directMatchIds.has(tool.id) : undefined
+                    }
+                    isRelatedMatch={
+                      searchQuery.trim() ? relatedMatchIds.has(tool.id) : undefined
+                    }
+                    hasSearch={searchQuery.trim().length > 0}
+                  />
+                </div>
+              ))}
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
