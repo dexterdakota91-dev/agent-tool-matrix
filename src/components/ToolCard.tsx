@@ -414,22 +414,18 @@ function ToolCardInner({
   // DEFAULT VIEW
   return (
     <motion.div
-      layout
-      layoutId={`card-${tool.id}`}
-      initial={{ opacity: 0, scale: 0.85 }}
+      initial={{ opacity: 0, scale: 0.95 }}
       animate={{
         opacity: cardOpacity,
         scale: cardScale,
         filter: cardFilter,
         y: liftY
       }}
-      exit={{ opacity: 0, scale: 0.5 }}
+      exit={{ opacity: 0, scale: 0.8 }}
       transition={{
-        layout: { type: "spring", stiffness: 30, damping: 12 },
-        opacity: { duration: 1.5, ease: "easeInOut", delay },
-        scale: { type: "spring", stiffness: 50, damping: 14, delay },
-        y: { type: "spring", stiffness: 50, damping: 14, delay },
-        filter: { duration: 1.0, delay }
+        opacity: { duration: 0.25, ease: "easeOut", delay },
+        scale: { duration: 0.2, delay },
+        filter: { duration: 0.25 }
       }}
       onClick={onClick}
       onKeyDown={(e) => {

@@ -102,7 +102,6 @@ export function CanvasTab({
           /* ========== SELECTION MODE: Left Detail Panel + Right Relevance Flow ========== */
           <motion.div
             key="selection-mode"
-            layout="position"
             onClick={(e) => {
               if (e.target === e.currentTarget) setSelectedTool(null);
             }}
@@ -145,7 +144,6 @@ export function CanvasTab({
 
             {/* RIGHT 2/3: Relevance-sorted cards (most relevant near the left) */}
             <motion.div
-              layout
               onClick={(e) => {
                 if (e.target === e.currentTarget) setSelectedTool(null);
               }}
@@ -158,7 +156,7 @@ export function CanvasTab({
                 onClick={(e) => {
                   if (e.target === e.currentTarget) setSelectedTool(null);
                 }}
-                className="grid grid-cols-1 sm:grid-cols-2 md:grid-flow-col md:grid-rows-3 items-start gap-3 sm:gap-4 auto-rows-max md:auto-cols-max h-full min-h-0 pt-2.5 justify-items-center md:justify-items-start"
+                className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-none md:grid-flow-col md:grid-rows-3 items-start gap-3 sm:gap-4 auto-rows-max md:auto-cols-max h-full min-h-0 pt-2.5 justify-items-center md:justify-items-start"
               >
                 {relevanceSortedTools.map(({ tool: t, score }) => (
                   <div key={t.id} className="w-full max-w-[280px] sm:max-w-none md:w-[175px] shrink-0">
@@ -185,17 +183,16 @@ export function CanvasTab({
           /* ========== DEFAULT MODE: Dense horizontal-scrolling grid on desktop, responsive centered grid on mobile ========== */
           <motion.div
             key="default-mode"
-            layout="position"
             onClick={(e) => {
               if (e.target === e.currentTarget) setSelectedTool(null);
             }}
-            className="flex-grow grid grid-cols-1 sm:grid-cols-2 md:grid-flow-col md:grid-rows-3 items-start gap-3 sm:gap-4 auto-rows-max md:auto-cols-max overflow-y-auto md:overflow-y-hidden md:overflow-x-auto pt-3 pb-8 px-1 sm:px-2 md:pt-6 md:pb-6 md:px-3 min-h-0 w-full relative z-10 justify-items-center md:justify-items-start no-scrollbar"
+            className="flex-grow grid grid-cols-1 sm:grid-cols-2 md:grid-cols-none md:grid-flow-col md:grid-rows-3 items-start gap-3 sm:gap-4 auto-rows-max md:auto-cols-max overflow-y-auto md:overflow-y-hidden md:overflow-x-auto pt-3 pb-8 px-1 sm:px-2 md:pt-6 md:pb-6 md:px-3 min-h-0 w-full relative z-10 justify-items-center md:justify-items-start no-scrollbar"
           >
             {filteredTools.map((tool, idx) => (
               <div key={tool.id} className="w-full max-w-[280px] sm:max-w-none md:w-[175px] shrink-0">
                 <ToolCard
                   tool={tool}
-                  delay={idx * 0.02}
+                  delay={Math.min(idx * 0.005, 0.2)}
                   onClick={() => {
                     setSelectedTool(tool);
                   }}
