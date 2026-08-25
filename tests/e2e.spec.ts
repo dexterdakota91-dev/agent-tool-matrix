@@ -1,7 +1,40 @@
+import { loadEnvConfig } from '@next/env';
+loadEnvConfig(process.cwd());
+
 import { test, expect } from '@playwright/test';
 
 test.describe('Agent Tool Matrix E2E Test Suite', () => {
   test.describe.configure({ timeout: 60000 });
+
+  let prisma: import('@prisma/client').PrismaClient;
+
+  test.beforeAll(async () => {
+    const prismaModule = await import('../src/lib/prisma');
+    prisma = prismaModule.prisma;
+  });
+
+  test.afterAll(async () => {
+    try {
+      if (prisma) {
+        await prisma.workflow.deleteMany({
+          where: {
+            title: {
+              startsWith: 'E2E Test'
+            }
+          }
+        });
+        await prisma.tool.deleteMany({
+          where: {
+            title: {
+              startsWith: 'E2E Test'
+            }
+          }
+        });
+      }
+    } catch (err) {
+      console.error('Failed to cleanup E2E test tools/workflows:', err);
+    }
+  });
 
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
