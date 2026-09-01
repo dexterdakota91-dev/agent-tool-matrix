@@ -99,7 +99,7 @@ function ToolCardInner({
   let cardFilter = "grayscale(0%) brightness(1)";
 
   // Card height class
-  const heightClass = isExpanded ? "h-[120px]" : "h-[74px]";
+  const heightClass = isExpanded ? "h-[130px]" : "h-[76px]";
 
   if (isSelected) {
     cardScale = 1;
@@ -204,9 +204,9 @@ function ToolCardInner({
         }}
         className={`
           relative flex flex-col justify-between
-          rounded-xl p-4
+          rounded-xl p-3.5 sm:p-4
           backdrop-blur-md bg-zinc-950/90 dark:bg-zinc-950/95
-          border w-[320px] sm:w-[400px] h-[calc(100%-16px)] min-h-0
+          border w-full max-w-[360px] sm:max-w-[400px] md:w-[380px] lg:w-[420px] h-auto min-h-[380px] md:h-[calc(100%-16px)] min-h-0
           ${activeBorderMap[tool.type]} border-2
         `}
         style={{
@@ -367,11 +367,11 @@ function ToolCardInner({
         </div>
 
         {/* Action Panel (Demoted pipeline button to secondary outline style) */}
-        <div className="flex-shrink-0 flex items-center gap-2 pt-3 border-t border-white/10 mt-3">
+        <div className="flex-shrink-0 flex flex-wrap sm:flex-nowrap items-center gap-1.5 sm:gap-2 pt-2.5 sm:pt-3 border-t border-white/10 mt-2.5 sm:mt-3">
           {onAddToPipeline && (
             <button
               onClick={onAddToPipeline}
-              className="flex-grow flex items-center justify-center gap-1.5 py-1.5 rounded-lg border border-white/10 hover:bg-white/5 text-foreground/85 font-semibold text-xs transition-all active:scale-95 cursor-pointer"
+              className="flex-1 min-w-[90px] flex items-center justify-center gap-1 sm:gap-1.5 py-1.5 px-2 rounded-lg border border-white/10 hover:bg-white/5 text-foreground/85 font-semibold text-[11px] sm:text-xs transition-all active:scale-95 cursor-pointer"
             >
               <Layers className="w-3.5 h-3.5" />
               <span>+ Add Step</span>
@@ -380,7 +380,7 @@ function ToolCardInner({
           {onAddToCart && (
             <button
               onClick={isAddedToCart ? onRemoveFromCart : onAddToCart}
-              className="flex-grow flex items-center justify-center gap-1.5 py-1.5 rounded-lg border border-white/10 hover:bg-white/5 text-foreground/85 font-semibold text-xs transition-all active:scale-95 cursor-pointer animate-fade-in"
+              className="flex-1 min-w-[90px] flex items-center justify-center gap-1 sm:gap-1.5 py-1.5 px-2 rounded-lg border border-white/10 hover:bg-white/5 text-foreground/85 font-semibold text-[11px] sm:text-xs transition-all active:scale-95 cursor-pointer animate-fade-in"
             >
               <ShoppingCart className="w-3.5 h-3.5 text-pink-500" />
               <span>{isAddedToCart ? "Remove Cart" : "Add to Cart"}</span>
@@ -389,7 +389,7 @@ function ToolCardInner({
           {userRole === "Admin" && !isInBuilder && onEdit && (
             <button
               onClick={onEdit}
-              className="p-1.5 rounded-lg border border-white/15 bg-white/5 hover:bg-white/10 text-foreground transition-all active:scale-95 cursor-pointer focus-visible:ring-2 focus-visible:ring-white/30"
+              className="p-1.5 rounded-lg border border-white/15 bg-white/5 hover:bg-white/10 text-foreground transition-all active:scale-95 cursor-pointer focus-visible:ring-2 focus-visible:ring-white/30 shrink-0"
               title="Edit Tool"
               aria-label="Edit tool"
             >
@@ -399,7 +399,7 @@ function ToolCardInner({
           {userRole === "Admin" && !isInBuilder && onDelete && (
             <button
               onClick={onDelete}
-              className="p-1.5 rounded-lg border border-red-500/30 bg-red-600/10 hover:bg-red-600/20 text-red-400 transition-all active:scale-95 cursor-pointer focus-visible:ring-2 focus-visible:ring-red-500/50"
+              className="p-1.5 rounded-lg border border-red-500/30 bg-red-600/10 hover:bg-red-600/20 text-red-400 transition-all active:scale-95 cursor-pointer focus-visible:ring-2 focus-visible:ring-red-500/50 shrink-0"
               title="Delete"
               aria-label="Delete tool"
             >
@@ -414,22 +414,18 @@ function ToolCardInner({
   // DEFAULT VIEW
   return (
     <motion.div
-      layout
-      layoutId={`card-${tool.id}`}
-      initial={{ opacity: 0, scale: 0.85 }}
+      initial={{ opacity: 0, scale: 0.95 }}
       animate={{
         opacity: cardOpacity,
         scale: cardScale,
         filter: cardFilter,
         y: liftY
       }}
-      exit={{ opacity: 0, scale: 0.5 }}
+      exit={{ opacity: 0, scale: 0.8 }}
       transition={{
-        layout: { type: "spring", stiffness: 30, damping: 12 },
-        opacity: { duration: 1.5, ease: "easeInOut", delay },
-        scale: { type: "spring", stiffness: 50, damping: 14, delay },
-        y: { type: "spring", stiffness: 50, damping: 14, delay },
-        filter: { duration: 1.0, delay }
+        opacity: { duration: 0.25, ease: "easeOut", delay },
+        scale: { duration: 0.2, delay },
+        filter: { duration: 0.25 }
       }}
       onClick={onClick}
       onKeyDown={(e) => {
@@ -452,6 +448,7 @@ function ToolCardInner({
         flex flex-col justify-between
         w-full ${heightClass}
         ${borderMap[tool.type]}
+        transition-[height,box-shadow,border-color,background-color] duration-300 ease-out
         focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30
       `}
       style={{
@@ -488,10 +485,10 @@ function ToolCardInner({
           {isExpanded && tool.description && (
             <motion.p
               initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 0.6, height: "auto" }}
+              animate={{ opacity: 0.7, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.2 }}
-              className="text-[10px] text-foreground leading-snug mt-1 line-clamp-2 overflow-hidden"
+              transition={{ duration: 0.25, ease: "easeOut" }}
+              className="text-[10px] text-foreground leading-snug mt-1.5 line-clamp-2 overflow-hidden"
             >
               {tool.description}
             </motion.p>

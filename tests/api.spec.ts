@@ -1,8 +1,41 @@
-﻿import { test, expect } from '@playwright/test';
+import { loadEnvConfig } from '@next/env';
+loadEnvConfig(process.cwd());
+
+import { test, expect } from '@playwright/test';
 
 test.describe('Agent Tool Matrix API & MCP E2E Test Suite', () => {
   // Guarantee serial execution to preserve tool creation ID across tests
   test.describe.configure({ mode: 'serial' });
+
+  let prisma: import('@prisma/client').PrismaClient;
+
+  test.beforeAll(async () => {
+    const prismaModule = await import('../src/lib/prisma');
+    prisma = prismaModule.prisma;
+  });
+
+  test.afterAll(async () => {
+    try {
+      if (prisma) {
+        await prisma.workflow.deleteMany({
+          where: {
+            title: {
+              startsWith: 'API Test'
+            }
+          }
+        });
+        await prisma.tool.deleteMany({
+          where: {
+            title: {
+              startsWith: 'API Test'
+            }
+          }
+        });
+      }
+    } catch (err) {
+      console.error('Failed to cleanup API test tools/workflows:', err);
+    }
+  });
 
   const token = 'dev_static_key_12345';
   let createdToolId: string;
