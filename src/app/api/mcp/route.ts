@@ -150,7 +150,7 @@ async function processMcpRequest(
         const dbTools = await prisma.tool.findMany();
 
         // Expose prompt and connector tools as executable schemas (or skills run locally)
-        const mcpTools = dbTools.map((tool) => ({
+        const mcpTools = dbTools.map((tool: any) => ({ // eslint-disable-line @typescript-eslint/no-explicit-any
           name: normalizeName(tool.title),
           description: tool.description || "Execute " + tool.title + " from Agent Tool Matrix.",
           inputSchema: {
@@ -275,7 +275,7 @@ async function processMcpRequest(
       try {
         const dbTools = await prisma.tool.findMany({ where: { type: "prompt" } });
 
-        const mcpPrompts = dbTools.map((tool) => ({
+        const mcpPrompts = dbTools.map((tool: any) => ({ // eslint-disable-line @typescript-eslint/no-explicit-any
           name: normalizeName(tool.title),
           description: tool.description || "Prompt template: " + tool.title,
           arguments: [

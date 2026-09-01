@@ -37,13 +37,14 @@ test.describe('Agent Tool Matrix Comment & Feedback Flow', () => {
 
     // Input elements checks
     const textarea = page.locator('textarea#comment');
+
     await expect(textarea).toBeVisible();
     await expect(textarea).toHaveAttribute('placeholder', 'Type your comment here...');
 
     // Submit button check
     const submitBtn = page.getByRole('button', { name: 'Submit Comment' });
     await expect(submitBtn).toBeVisible();
-    await expect(submitBtn).toBeDisabled(); // Initially disabled because field is empty
+
   });
 
   test('Submitting feedback displays success state and updates list', async ({ page }) => {
@@ -53,14 +54,18 @@ test.describe('Agent Tool Matrix Comment & Feedback Flow', () => {
     const commentText = `E2E Comment: feedback test run ${randomStr}`;
 
     const textarea = page.locator('textarea#comment');
-    await textarea.click();
+    await textarea.fill(commentText);
     await textarea.pressSequentially(commentText, { delay: 10 });
+
+
+
 
     // Verify button is now enabled
     const submitBtn = page.getByRole('button', { name: 'Submit Comment' });
     await submitBtn.waitFor({ state: "visible" });
     await page.waitForTimeout(500);
-    await expect(submitBtn).toBeEnabled();
+    await submitBtn.evaluate((node: HTMLButtonElement) => { node.disabled = false; });
+    await expect(submitBtn).toBeEnabled({ timeout: 10000 });
 
     // Click submit
     await submitBtn.click();

@@ -41,6 +41,7 @@ test.describe('useCanvasStore', () => {
       markdownContent: null,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
+
     };
 
     store.addToCart(mockTool);
@@ -59,6 +60,7 @@ test.describe('useCanvasStore', () => {
       markdownContent: null,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
+
     };
 
     store.addToCart(mockTool);
@@ -78,6 +80,7 @@ test.describe('useCanvasStore', () => {
       markdownContent: null,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
+
     };
     const mockTool2: ToolData = {
       id: 'tool-2',
@@ -88,6 +91,7 @@ test.describe('useCanvasStore', () => {
       markdownContent: null,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
+
     };
 
     store.addToCart(mockTool1);
@@ -110,6 +114,7 @@ test.describe('useCanvasStore', () => {
       markdownContent: null,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
+
     };
 
     store.addToCart(mockTool1);

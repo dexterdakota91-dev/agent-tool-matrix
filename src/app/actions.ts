@@ -42,12 +42,11 @@ export interface Workflow {
 
 export async function getTools(): Promise<Tool[]> {
   try {
-    const rows = await sql`
-      SELECT id, title, type, description, "markdownContent", tags, "createdAt", "updatedAt"
-      FROM tools
-      ORDER BY "createdAt" DESC
-    `;
-    return rows.map((r: any) => ({ // eslint-disable-line @typescript-eslint/no-explicit-any
+    const rows = await prisma.tool.findMany({
+      orderBy: { createdAt: "desc" }
+    });
+    return rows.map((r: import("@prisma/client").Tool) =>
+   ({
       id: r.id,
       title: r.title,
       type: r.type,
@@ -236,7 +235,7 @@ export async function createWorkflow(data: {
   toolIds: string[];
 }): Promise<Workflow | null> {
   try {
-    const newWorkflow = await prisma.$transaction(async (tx) => {
+    const newWorkflow = await prisma.$transaction(async (tx: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
       const wf = await tx.workflow.create({
         data: {
           title: data.title,
@@ -293,12 +292,11 @@ export interface ApiKey {
 
 export async function getApiKeys(): Promise<ApiKey[]> {
   try {
-    const rows = await sql`
-      SELECT id, name, prefix, "createdAt", "lastUsed", active
-      FROM api_keys
-      ORDER BY "createdAt" DESC
-    `;
-    return rows.map((r: any) => ({ // eslint-disable-line @typescript-eslint/no-explicit-any
+    const rows = await prisma.apiKey.findMany({
+      orderBy: { createdAt: "desc" }
+    });
+    return rows.map((r: import("@prisma/client").ApiKey) =>
+   ({
       id: r.id,
       name: r.name,
       prefix: r.prefix,
