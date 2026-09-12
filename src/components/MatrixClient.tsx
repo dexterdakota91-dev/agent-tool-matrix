@@ -380,17 +380,17 @@ export function MatrixClient({ initialData }: MatrixClientProps) {
       <StarfieldBackground />
 
       {/* Top Banner Gradient glow */}
-      <div className="absolute top-0 left-1/4 right-1/4 h-72 bg-gradient-to-b from-blue-600/10 via-emerald-600/5 to-transparent rounded-full filter blur-[80px] pointer-events-none" />
+      <div className="absolute top-0 left-1/4 right-1/4 h-56 bg-gradient-to-b from-cyan-500/10 via-pink-500/5 to-transparent rounded-full filter blur-[70px] pointer-events-none" />
 
       {/* Navigation */}
-      <nav className="sticky top-0 w-full z-40 backdrop-blur-lg bg-zinc-900/70 border-b border-white/5 py-2 sm:py-2.5 px-3 sm:px-6 md:px-10 flex flex-col md:flex-row items-center justify-between gap-2.5 md:gap-3">
+      <nav className="sticky top-0 w-full z-40 backdrop-blur-xl bg-[#07090e]/90 border-b border-white/10 py-2 sm:py-2.5 px-3 sm:px-6 md:px-10 flex flex-col md:flex-row items-center justify-between gap-2.5 md:gap-3">
         <div className="flex items-center justify-between w-full md:w-auto gap-3">
           <div className="flex items-center gap-2.5 sm:gap-3">
-            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-gradient-to-tr from-pink-500 via-blue-600 to-emerald-400 text-white flex items-center justify-center font-bold font-mono tracking-wider shadow-lg shadow-blue-500/10 select-none text-xs sm:text-sm">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-gradient-to-tr from-pink-500 via-cyan-500 to-emerald-400 text-white flex items-center justify-center font-bold font-mono tracking-wider shadow-lg shadow-cyan-500/20 select-none text-xs sm:text-sm">
               ATM
             </div>
             <div className="text-left">
-              <h1 className="font-bold text-lg sm:text-xl md:text-2xl leading-none tracking-tight bg-gradient-to-r from-white via-zinc-200 to-zinc-400 bg-clip-text text-transparent select-none">
+              <h1 className="font-bold text-lg sm:text-xl md:text-2xl leading-none tracking-tight bg-gradient-to-r from-white via-zinc-100 to-zinc-300 bg-clip-text text-transparent select-none">
                 Agent Tool Matrix
               </h1>
             </div>
@@ -402,7 +402,7 @@ export function MatrixClient({ initialData }: MatrixClientProps) {
             <button
               onClick={handleOpenCreate}
               disabled={userRole !== "Admin"}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-blue-600 to-emerald-500 hover:from-blue-500 hover:to-emerald-400 text-white font-semibold text-xs shadow-md active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-cyan-600 to-emerald-500 hover:from-cyan-500 hover:to-emerald-400 text-white font-semibold text-xs shadow-md active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
             >
               <Plus className="w-3.5 h-3.5" />
               <span>Create</span>
@@ -411,19 +411,19 @@ export function MatrixClient({ initialData }: MatrixClientProps) {
         </div>
 
         {/* Navigation Tabs (Scrollable on narrow mobile screens) */}
-        <div className="flex items-center bg-white/5 dark:bg-black/40 border border-white/10 rounded-xl p-1 font-sans text-xs sm:text-sm max-w-full overflow-x-auto no-scrollbar shrink-0">
+        <div className="flex items-center bg-black/40 border border-white/10 rounded-xl p-1 font-sans text-xs sm:text-sm max-w-full overflow-x-auto no-scrollbar shrink-0 gap-1">
           <button
             onClick={() => {
               setActiveTab("canvas");
               setSimulatingWorkflow(null);
             }}
-            className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg font-medium whitespace-nowrap shrink-0 transition-all duration-200 ${
+            className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg font-semibold whitespace-nowrap shrink-0 transition-all duration-200 ${
               activeTab === "canvas"
-                ? "bg-white/10 dark:bg-white/5 text-white border border-white/10 shadow"
-                : "opacity-70 hover:opacity-100 text-foreground"
+                ? "bg-white/10 text-white border border-white/20 shadow-md"
+                : "text-zinc-400 hover:text-white hover:bg-white/5"
             }`}
           >
-            <Compass className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-pink-500" />
+            <Compass className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-pink-400" />
             <span>Canvas</span>
           </button>
           <button
@@ -431,26 +431,26 @@ export function MatrixClient({ initialData }: MatrixClientProps) {
               setActiveTab("builder");
               setSimulatingWorkflow(null);
             }}
-            className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg font-medium whitespace-nowrap shrink-0 transition-all duration-200 ${
+            className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg font-semibold whitespace-nowrap shrink-0 transition-all duration-200 ${
               activeTab === "builder"
-                ? "bg-white/10 dark:bg-white/5 text-white border border-white/10 shadow"
-                : "opacity-70 hover:opacity-100 text-foreground"
+                ? "bg-white/10 text-white border border-white/20 shadow-md"
+                : "text-zinc-400 hover:text-white hover:bg-white/5"
             }`}
           >
-            <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-500" />
+            <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-cyan-400" />
             <span>Pipeline Builder</span>
           </button>
           <button
             onClick={() => {
               setActiveTab("workflows");
             }}
-            className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg font-medium whitespace-nowrap shrink-0 transition-all duration-200 ${
+            className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg font-semibold whitespace-nowrap shrink-0 transition-all duration-200 ${
               activeTab === "workflows"
-                ? "bg-white/10 dark:bg-white/5 text-white border border-white/10 shadow"
-                : "opacity-70 hover:opacity-100 text-foreground"
+                ? "bg-white/10 text-white border border-white/20 shadow-md"
+                : "text-zinc-400 hover:text-white hover:bg-white/5"
             }`}
           >
-            <GitBranch className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-500" />
+            <GitBranch className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-400" />
             <span>Workflows</span>
           </button>
           <button
@@ -458,10 +458,10 @@ export function MatrixClient({ initialData }: MatrixClientProps) {
               setActiveTab("settings");
               setSimulatingWorkflow(null);
             }}
-            className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg font-medium whitespace-nowrap shrink-0 transition-all duration-200 ${
+            className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg font-semibold whitespace-nowrap shrink-0 transition-all duration-200 ${
               activeTab === "settings"
-                ? "bg-white/10 dark:bg-white/5 text-white border border-white/10 shadow"
-                : "opacity-70 hover:opacity-100 text-foreground"
+                ? "bg-white/10 text-white border border-white/20 shadow-md"
+                : "text-zinc-400 hover:text-white hover:bg-white/5"
             }`}
           >
             <Settings className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-zinc-400" />

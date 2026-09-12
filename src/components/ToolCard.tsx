@@ -20,21 +20,21 @@ export interface ToolData {
 }
 
 const glowMap = {
-  prompt: "rgba(236, 72, 153, 0.25)",
-  skill: "rgba(59, 130, 246, 0.25)",
-  mcp: "rgba(16, 185, 129, 0.25)"
+  prompt: "rgba(255, 23, 125, 0.45)",
+  skill: "rgba(0, 210, 255, 0.45)",
+  mcp: "rgba(0, 245, 155, 0.45)"
 };
 
 const borderMap = {
-  prompt: "border-pink-500/20 hover:border-pink-500/80 hover:bg-pink-500/5",
-  skill: "border-blue-500/20 hover:border-blue-500/80 hover:bg-blue-500/5",
-  mcp: "border-emerald-500/20 hover:border-emerald-500/80 hover:bg-emerald-500/5"
+  prompt: "border-pink-500/40 hover:border-pink-400 hover:bg-pink-500/10 shadow-[0_0_12px_rgba(255,23,125,0.15)]",
+  skill: "border-cyan-500/40 hover:border-cyan-400 hover:bg-cyan-500/10 shadow-[0_0_12px_rgba(0,210,255,0.15)]",
+  mcp: "border-emerald-500/40 hover:border-emerald-400 hover:bg-emerald-500/10 shadow-[0_0_12px_rgba(0,245,155,0.15)]"
 };
 
 const activeBorderMap = {
-  prompt: "border-pink-500",
-  skill: "border-blue-500",
-  mcp: "border-emerald-500"
+  prompt: "border-pink-400 ring-2 ring-pink-500/50 shadow-[0_0_20px_rgba(255,23,125,0.35)]",
+  skill: "border-cyan-400 ring-2 ring-cyan-500/50 shadow-[0_0_20px_rgba(0,210,255,0.35)]",
+  mcp: "border-emerald-400 ring-2 ring-emerald-500/50 shadow-[0_0_20px_rgba(0,245,155,0.35)]"
 };
 
 const iconMap = {
@@ -50,9 +50,15 @@ const labelMap = {
 };
 
 const typeColorMap = {
-  prompt: "from-pink-500/0 via-pink-500/70 to-pink-500/0",
-  skill: "from-blue-500/0 via-blue-500/70 to-blue-500/0",
-  mcp: "from-emerald-500/0 via-emerald-500/70 to-emerald-500/0"
+  prompt: "from-pink-500/0 via-pink-400/90 to-pink-500/0",
+  skill: "from-cyan-500/0 via-cyan-400/90 to-cyan-500/0",
+  mcp: "from-emerald-500/0 via-emerald-400/90 to-emerald-500/0"
+};
+
+const typeBadgeMap = {
+  prompt: "bg-pink-500/15 border-pink-500/30 text-pink-300",
+  skill: "bg-cyan-500/15 border-cyan-500/30 text-cyan-300",
+  mcp: "bg-emerald-500/15 border-emerald-500/30 text-emerald-300"
 };
 
 interface ToolCardProps {
@@ -96,7 +102,7 @@ function ToolCardInner({
   // Dynamic sizing: matched cards grow, unmatched shrink and fade
   let cardScale = 1;
   let cardOpacity = 1;
-  let cardFilter = "grayscale(0%) brightness(1)";
+  let cardFilter = "none";
 
   // Card height class
   const heightClass = isExpanded ? "h-[130px]" : "h-[76px]";
@@ -104,12 +110,12 @@ function ToolCardInner({
   if (isSelected) {
     cardScale = 1;
     cardOpacity = 1;
-    cardFilter = "grayscale(0%) brightness(1)";
+    cardFilter = "none";
   } else if (hasSearch) {
     if (isDirectMatch === true) {
       cardScale = 1.08;
       cardOpacity = 1;
-      cardFilter = "grayscale(0%) brightness(1.05)";
+      cardFilter = "none";
     } else if (isRelatedMatch === true) {
       cardScale = 0.95;
       cardOpacity = 0.65;
@@ -205,7 +211,7 @@ function ToolCardInner({
         className={`
           relative flex flex-col justify-between
           rounded-xl p-3.5 sm:p-4
-          backdrop-blur-md bg-zinc-950/90 dark:bg-zinc-950/95
+          backdrop-blur-xl bg-[#080910]/95 dark:bg-[#080910]/95
           border w-full max-w-[360px] sm:max-w-[400px] md:w-[380px] lg:w-[420px] h-auto min-h-[380px] md:h-[calc(100%-16px)] min-h-0
           ${activeBorderMap[tool.type]} border-2
         `}
@@ -226,7 +232,7 @@ function ToolCardInner({
         <div className="flex-shrink-0 flex items-center justify-between pb-2 border-b border-white/10 mb-3">
           <div className="flex items-center gap-2">
             <span className="text-base">{iconMap[tool.type]}</span>
-            <span className="text-[9px] font-mono font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-white/10 border border-white/10 text-foreground/80">
+            <span className={`text-[9px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${typeBadgeMap[tool.type]}`}>
               {labelMap[tool.type]}
             </span>
           </div>
@@ -234,7 +240,7 @@ function ToolCardInner({
           {onClick && (
             <button
               onClick={onClick}
-              className="text-foreground/50 hover:text-foreground hover:bg-white/10 p-1.5 rounded-lg transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-white/30"
+              className="text-zinc-400 hover:text-white hover:bg-white/10 p-1.5 rounded-lg transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-white/30"
               title="Clear Selection"
               aria-label="Close details"
             >
@@ -246,7 +252,7 @@ function ToolCardInner({
         {/* Scrollable Card Body */}
         <div className="flex-grow overflow-y-auto scrollbar-thin scrollbar-thumb-white/10 pr-1.5 space-y-3 text-left min-h-0">
           <div>
-            <h3 className="text-sm font-bold text-foreground tracking-tight leading-snug">
+            <h3 className="text-sm font-bold text-white tracking-tight leading-snug">
               {tool.title}
             </h3>
           </div>
@@ -257,8 +263,8 @@ function ToolCardInner({
               onClick={() => setActiveTab("description")}
               className={`flex-1 pb-1.5 border-b-2 text-center transition-all ${
                 activeTab === "description"
-                  ? "border-blue-500 text-foreground font-semibold"
-                  : "border-transparent text-foreground/40 hover:text-foreground/70"
+                  ? "border-cyan-400 text-white font-bold"
+                  : "border-transparent text-zinc-400 hover:text-zinc-200"
               }`}
             >
               Description
@@ -268,8 +274,8 @@ function ToolCardInner({
                 onClick={() => setActiveTab("implementation")}
                 className={`flex-1 pb-1.5 border-b-2 text-center transition-all ${
                   activeTab === "implementation"
-                    ? "border-blue-500 text-foreground font-semibold"
-                    : "border-transparent text-foreground/40 hover:text-foreground/70"
+                    ? "border-cyan-400 text-white font-bold"
+                    : "border-transparent text-zinc-400 hover:text-zinc-200"
                 }`}
               >
                 Code / Data
@@ -279,8 +285,8 @@ function ToolCardInner({
               onClick={() => setActiveTab("schema")}
               className={`flex-1 pb-1.5 border-b-2 text-center transition-all ${
                 activeTab === "schema"
-                  ? "border-blue-500 text-foreground font-semibold"
-                  : "border-transparent text-foreground/40 hover:text-foreground/70"
+                  ? "border-cyan-400 text-white font-bold"
+                  : "border-transparent text-zinc-400 hover:text-zinc-200"
               }`}
             >
               Metadata
@@ -291,7 +297,7 @@ function ToolCardInner({
           <div className="min-h-0 flex-grow">
             {activeTab === "description" && (
               <div className="space-y-3">
-                <p className="text-xs leading-relaxed text-foreground/90 whitespace-pre-line">
+                <p className="text-xs leading-relaxed text-zinc-200 whitespace-pre-line">
                   {tool.description || "No description provided."}
                 </p>
 
@@ -300,10 +306,10 @@ function ToolCardInner({
                   onClick={handleAction}
                   className={`w-full py-2 px-4 rounded-xl text-xs font-bold shadow-lg flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-95 text-white ${
                     tool.type === 'prompt'
-                      ? 'bg-gradient-to-r from-pink-600 to-pink-500 hover:from-pink-500 hover:to-pink-400 shadow-pink-600/10'
+                      ? 'bg-gradient-to-r from-pink-600 via-pink-500 to-rose-500 hover:from-pink-500 hover:to-rose-400 shadow-pink-500/20'
                       : tool.type === 'skill'
-                      ? 'bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 shadow-blue-600/10'
-                      : 'bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 shadow-emerald-600/10'
+                      ? 'bg-gradient-to-r from-cyan-600 via-cyan-500 to-blue-500 hover:from-cyan-500 hover:to-blue-400 shadow-cyan-500/20'
+                      : 'bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-500 hover:from-emerald-500 hover:to-teal-400 shadow-emerald-500/20'
                   }`}
                 >
                   {tool.type === "prompt" ? (
@@ -443,7 +449,7 @@ function ToolCardInner({
         relative cursor-pointer select-none group origin-top
         glow-card glow-card-${tool.type}
         rounded-xl p-3
-        backdrop-blur-md bg-zinc-950/75 dark:bg-zinc-900/80
+        backdrop-blur-xl bg-[#080910]/95 dark:bg-[#080910]/95
         border shadow-md
         flex flex-col justify-between
         w-full ${heightClass}
@@ -462,7 +468,7 @@ function ToolCardInner({
       <div className="absolute bottom-1 right-1 w-1.5 h-1.5 border-b border-r border-white/20 rounded-br-[3px] pointer-events-none group-hover:border-white/50 group-hover:scale-110 transition-all duration-300" />
 
       {/* Glowing accent border line on top */}
-      <div className={`absolute top-0 left-3 right-3 h-[1.5px] bg-gradient-to-r ${typeColorMap[tool.type]} opacity-60 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none`} />
+      <div className={`absolute top-0 left-3 right-3 h-[1.5px] bg-gradient-to-r ${typeColorMap[tool.type]} opacity-70 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none`} />
 
       {/* Card contents wrapper */}
       <div className="flex flex-col h-full justify-between">
@@ -470,13 +476,13 @@ function ToolCardInner({
           {/* Header row: icon + type badge */}
           <div className="flex items-center justify-between mb-1">
             <span className="text-sm">{iconMap[tool.type]}</span>
-            <span className="text-[8px] font-mono font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-white/10 border border-white/10 text-foreground/70">
+            <span className={`text-[8px] font-mono font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full border ${typeBadgeMap[tool.type]}`}>
               {labelMap[tool.type]}
             </span>
           </div>
 
           {/* Title */}
-          <h3 className="text-[11px] font-bold text-foreground tracking-tight leading-[1.3] line-clamp-2 h-7 overflow-hidden">
+          <h3 className="text-[11px] font-bold text-zinc-100 tracking-tight leading-[1.3] line-clamp-2 h-7 overflow-hidden group-hover:text-white transition-colors">
             {tool.title}
           </h3>
 
@@ -485,10 +491,10 @@ function ToolCardInner({
           {isExpanded && tool.description && (
             <motion.p
               initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 0.7, height: "auto" }}
+              animate={{ opacity: 0.9, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.25, ease: "easeOut" }}
-              className="text-[10px] text-foreground leading-snug mt-1.5 line-clamp-2 overflow-hidden"
+              className="text-[10px] text-zinc-300 leading-snug mt-1.5 line-clamp-2 overflow-hidden"
             >
               {tool.description}
             </motion.p>

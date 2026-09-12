@@ -91,7 +91,7 @@ export function CanvasTab({
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: 20 }}
       transition={{ duration: 0.5 }}
-      className="flex-grow flex flex-col gap-3 sm:gap-4 overflow-hidden h-full min-h-0 bg-zinc-950/30 dark:bg-zinc-950/40 backdrop-blur-md border border-white/10 rounded-2xl p-2.5 sm:p-4 md:p-5 shadow-2xl relative"
+      className="flex-grow flex flex-col gap-3 sm:gap-4 overflow-hidden h-full min-h-0 bg-[#07090e]/75 dark:bg-[#07090e]/75 backdrop-blur-xl border border-white/10 rounded-2xl p-2.5 sm:p-4 md:p-5 shadow-2xl relative"
     >
       {/* Unified Search & Header Section */}
       <div className="flex-shrink-0 relative z-10">
