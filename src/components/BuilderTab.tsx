@@ -5,6 +5,82 @@ import { motion } from "framer-motion";
 import { Search, ChevronUp, ChevronDown, Trash2, CheckCircle2, RefreshCw } from "lucide-react";
 import { Tool } from "@/app/actions";
 
+interface MemoizedStepProps {
+  step: Tool;
+  idx: number;
+  totalSteps: number;
+  moveStep: (index: number, direction: "up" | "down") => void;
+  removeFromPipeline: (index: number) => void;
+}
+
+const MemoizedStep = React.memo(function MemoizedStep({
+  step,
+  idx,
+  totalSteps,
+  moveStep,
+  removeFromPipeline
+}: MemoizedStepProps) {
+  return (
+    <div className="relative">
+      {/* Sequence Flow Connector Arrow */}
+      {idx > 0 && (
+        <div className="absolute -top-4 left-6 h-4 w-0.5 bg-gradient-to-b from-blue-500/50 to-emerald-500/50" />
+      )}
+
+      <div className="flex items-center justify-between p-4 rounded-xl bg-zinc-950/60 border border-white/10">
+        <div className="flex items-center gap-4">
+          <div className="w-6 h-6 rounded-full bg-white/10 text-white flex items-center justify-center text-[10px] font-mono font-bold">
+            {idx + 1}
+          </div>
+          <span className="text-xl">
+            {step.type === "prompt" ? "💬" : step.type === "skill" ? "⚡" : "🔌"}
+          </span>
+          <div>
+            <h4 className="text-sm font-bold">{step.title}</h4>
+            <span className="text-[9px] uppercase tracking-wider opacity-60 font-mono">
+              {step.type}
+            </span>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          {/* Order adjustments */}
+          <button
+            type="button"
+            onClick={() => moveStep(idx, "up")}
+            disabled={idx === 0}
+            aria-label="Move step up"
+            title="Move step up"
+            className="p-1 rounded bg-white/5 border border-white/10 hover:bg-white/10 disabled:opacity-30 disabled:hover:bg-white/5 text-foreground/80 cursor-pointer"
+          >
+            <ChevronUp className="w-3.5 h-3.5" />
+          </button>
+          <button
+            type="button"
+            onClick={() => moveStep(idx, "down")}
+            disabled={idx === totalSteps - 1}
+            aria-label="Move step down"
+            title="Move step down"
+            className="p-1 rounded bg-white/5 border border-white/10 hover:bg-white/10 disabled:opacity-30 disabled:hover:bg-white/5 text-foreground/80 cursor-pointer"
+          >
+            <ChevronDown className="w-3.5 h-3.5" />
+          </button>
+          {/* Remove step */}
+          <button
+            type="button"
+            onClick={() => removeFromPipeline(idx)}
+            aria-label="Remove step"
+            title="Remove step"
+            className="p-1.5 rounded bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 text-red-400 ml-2 cursor-pointer"
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+});
+
 interface BuilderTabProps {
   tools: Tool[];
   searchQuery: string;
@@ -38,6 +114,20 @@ export function BuilderTab({
   removeFromPipeline,
   addToPipeline
 }: BuilderTabProps) {
+  const handleMoveStep = React.useCallback(
+    (index: number, direction: "up" | "down") => {
+      moveStep(index, direction);
+    },
+    [moveStep]
+  );
+
+  const handleRemoveStep = React.useCallback(
+    (index: number) => {
+      removeFromPipeline(index);
+    },
+    [removeFromPipeline]
+  );
+
   return (
     <motion.div
       key="builder"
@@ -111,76 +201,52 @@ export function BuilderTab({
         </div>
 
         {builderSteps.length === 0 ? (
-          <div className="text-center py-20 flex flex-col items-center justify-center gap-3">
-            <div className="w-12 h-12 rounded-full border border-dashed border-white/20 flex items-center justify-center text-foreground/40 font-bold text-lg">
+          <div className="text-center py-20 flex flex-col items-center justify-center gap-4">
+            <div className="w-20 h-20 rounded-full border-2 border-dashed border-white/20 flex items-center justify-center text-foreground/40 font-bold text-3xl">
               0
             </div>
-            <h3 className="text-sm font-bold text-foreground">Pipeline Queue Empty</h3>
-            <p className="text-[11px] text-foreground/60 max-w-xs">
-              Add tools from the left pane to initialize a custom agent workflow.
+            <h3 className="text-base font-bold text-foreground">Pipeline Queue is Empty</h3>
+            <p className="text-sm text-foreground/60 max-w-sm">
+              Click &quot;Add Step&quot; on any tool card from the left pane to initialize your custom agent workflow sequence.
             </p>
+            {tools.length > 0 && (
+              <div className="mt-6 w-full max-w-md">
+                <p className="text-xs uppercase tracking-wider text-foreground/50 mb-3 font-semibold">Quick Suggestions</p>
+                <div className="flex flex-col gap-2">
+                  {tools.slice(0, 3).map((tool) => (
+                    <button
+                      key={tool.id}
+                      type="button"
+                      onClick={() => addToPipeline(tool)}
+                      className="flex items-center justify-between p-3 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 transition-all text-left"
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className="text-lg">
+                          {tool.type === "prompt" ? "💬" : tool.type === "skill" ? "⚡" : "🔌"}
+                        </span>
+                        <span className="text-sm font-medium">{tool.title}</span>
+                      </div>
+                      <span className="text-xs font-semibold px-2 py-1 rounded bg-white/10 hover:bg-foreground hover:text-background transition-colors">
+                        Add
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         ) : (
           <form onSubmit={handleSaveWorkflow} className="space-y-6">
             <div className="space-y-4">
               {builderSteps.map((step, idx) => (
-                <div key={`${step.id}-${idx}`} className="relative">
-                  {/* Sequence Flow Connector Arrow */}
-                  {idx > 0 && (
-                    <div className="absolute -top-4 left-6 h-4 w-0.5 bg-gradient-to-b from-blue-500/50 to-emerald-500/50" />
-                  )}
-
-                  <div className="flex items-center justify-between p-4 rounded-xl bg-zinc-950/60 border border-white/10">
-                    <div className="flex items-center gap-4">
-                      <div className="w-6 h-6 rounded-full bg-white/10 text-white flex items-center justify-center text-[10px] font-mono font-bold">
-                        {idx + 1}
-                      </div>
-                      <span className="text-xl">
-                        {step.type === "prompt" ? "💬" : step.type === "skill" ? "⚡" : "🔌"}
-                      </span>
-                      <div>
-                        <h4 className="text-sm font-bold">{step.title}</h4>
-                        <span className="text-[9px] uppercase tracking-wider opacity-60 font-mono">
-                          {step.type}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      {/* Order adjustments */}
-                      <button
-                        type="button"
-                        onClick={() => moveStep(idx, "up")}
-                        disabled={idx === 0}
-                        aria-label="Move step up"
-                        title="Move step up"
-                        className="p-1 rounded bg-white/5 border border-white/10 hover:bg-white/10 disabled:opacity-30 disabled:hover:bg-white/5 text-foreground/80 cursor-pointer"
-                      >
-                        <ChevronUp className="w-3.5 h-3.5" />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => moveStep(idx, "down")}
-                        disabled={idx === builderSteps.length - 1}
-                        aria-label="Move step down"
-                        title="Move step down"
-                        className="p-1 rounded bg-white/5 border border-white/10 hover:bg-white/10 disabled:opacity-30 disabled:hover:bg-white/5 text-foreground/80 cursor-pointer"
-                      >
-                        <ChevronDown className="w-3.5 h-3.5" />
-                      </button>
-                      {/* Remove step */}
-                      <button
-                        type="button"
-                        onClick={() => removeFromPipeline(idx)}
-                        aria-label="Remove step"
-                        title="Remove step"
-                        className="p-1.5 rounded bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 text-red-400 ml-2 cursor-pointer"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  </div>
-                </div>
+                <MemoizedStep
+                  key={`${step.id}-${idx}`}
+                  step={step}
+                  idx={idx}
+                  totalSteps={builderSteps.length}
+                  moveStep={handleMoveStep}
+                  removeFromPipeline={handleRemoveStep}
+                />
               ))}
             </div>
 
