@@ -2,9 +2,37 @@
 
 import * as React from "react";
 import DOMPurify from "isomorphic-dompurify";
+import { Check, Copy } from "lucide-react";
 
 interface MarkdownRendererProps {
   content: string;
+}
+
+
+function CodeBlock({ codeLines, codeLanguage }: { codeLines: string[], codeLanguage: string }) {
+  const [isCopied, setIsCopied] = React.useState(false);
+  const codeString = codeLines.join("\n");
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(codeString);
+    setIsCopied(true);
+    setTimeout(() => setIsCopied(false), 2000);
+  };
+
+  return (
+    <div className="relative group my-3">
+      <button
+        onClick={handleCopy}
+        className="absolute right-2 top-2 p-1.5 rounded-md bg-black/50 text-foreground/50 opacity-0 group-hover:opacity-100 transition-opacity hover:text-foreground hover:bg-black/70"
+        aria-label="Copy code"
+      >
+        {isCopied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+      </button>
+      <pre className="bg-black/25 dark:bg-black/50 border border-white/10 rounded-lg p-4 font-mono text-xs overflow-x-auto text-emerald-400">
+        <code className={codeLanguage}>{codeString}</code>
+      </pre>
+    </div>
+  );
 }
 
 export function MarkdownRenderer({ content }: MarkdownRendererProps) {
@@ -43,7 +71,10 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
     // Inline code (`code`)
     html = html.replace(/`(.*?)`/g, "<code class='bg-black/10 dark:bg-white/10 px-1.5 py-0.5 rounded font-mono text-xs text-pink-500'>$1</code>");
 
-    return DOMPurify.sanitize(html);
+    // Links ([text](url))
+    html = html.replace(/\[(.*?)\]\((.*?)\)/g, "<a href='$2' target='_blank' rel='noopener noreferrer' class='text-blue-500 hover:underline'>$1</a>");
+
+    return DOMPurify.sanitize(html, { ADD_ATTR: ['target'] });
   };
 
   lines.forEach((line, idx) => {
@@ -52,9 +83,7 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
       if (inCodeBlock) {
         // End code block
         elements.push(
-          <pre key={`code-${idx}`} className="bg-black/25 dark:bg-black/50 border border-white/10 rounded-lg p-4 my-3 font-mono text-xs overflow-x-auto text-emerald-400">
-            <code className={codeLanguage}>{codeLines.join("\n")}</code>
-          </pre>
+          <CodeBlock key={`code-${idx}`} codeLines={codeLines} codeLanguage={codeLanguage} />
         );
         codeLines = [];
         inCodeBlock = false;
