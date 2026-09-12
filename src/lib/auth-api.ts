@@ -11,14 +11,7 @@ function safeCompare(a: string, b: string): boolean {
   return crypto.timingSafeEqual(hashA, hashB);
 }
 
-/**
- * Validates an incoming request's API key.
- * Supports:
- * - Authorization: Bearer <key>
- * - x-api-key: <key>
- * - query parameter ?apiKey=<key> (useful for simple GET links)
- */
-export async function validateApiKey(request: Request): Promise<boolean> {
+export async function getAuthContext(request: Request): Promise<{ isAuthorized: boolean; keyName?: string; role?: string; isDevToken?: boolean }> {
   // 1. Resolve key from headers or URL parameters
   const url = new URL(request.url);
   const authHeader = request.headers.get("Authorization");
@@ -36,13 +29,13 @@ export async function validateApiKey(request: Request): Promise<boolean> {
 
   // Security Hardening: Mitigate CPU DoS by limiting max token length
   if (!token || token.length > 256) {
-    return false;
+    return { isAuthorized: false };
   }
 
   // 2. Check Local Dev Token (BOM-safe comparison)
   const devToken = (process.env.DEV_AGENT_TOKEN || "dev_static_key_12345").replace(/^\uFEFF/, "").trim();
   if (devToken && safeCompare(token, devToken)) {
-    return true;
+    return { isAuthorized: true, isDevToken: true };
   }
 
   // 3. Hash the token and look up in the database
@@ -54,17 +47,34 @@ export async function validateApiKey(request: Request): Promise<boolean> {
     });
 
     if (keyRecord && keyRecord.active) {
+      const record = keyRecord as unknown as { expiresAt?: Date | string | null };
+      if (record.expiresAt && new Date(record.expiresAt) <= new Date()) {
+        return { isAuthorized: false };
+      }
+
       // Background update lastUsed timestamp asynchronously
       prisma.apiKey.update({
         where: { id: keyRecord.id },
         data: { lastUsed: new Date() }
       }).catch((err: unknown) => console.error("Failed to update API key lastUsed:", err));
 
-      return true;
+      return { isAuthorized: true, keyName: keyRecord.name };
     }
   } catch (error) {
     console.error("Database error validating API key:", error);
   }
 
-  return false;
+  return { isAuthorized: false };
+}
+
+/**
+ * Validates an incoming request's API key.
+ * Supports:
+ * - Authorization: Bearer <key>
+ * - x-api-key: <key>
+ * - query parameter ?apiKey=<key> (useful for simple GET links)
+ */
+export async function validateApiKey(request: Request): Promise<boolean> {
+  const context = await getAuthContext(request);
+  return context.isAuthorized;
 }
