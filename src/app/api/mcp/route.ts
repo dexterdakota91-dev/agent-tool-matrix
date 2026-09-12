@@ -301,15 +301,12 @@ async function processMcpRequest(
         const name = params?.name;
         if (!name) throw new Error("Missing prompt name");
 
-        // Fetch only id and title for matching to reduce memory footprint
-        const partialTools = await prisma.tool.findMany({
-          where: { type: "prompt" },
-          select: { id: true, title: true }
+        // Query prompt tools directly in a single database roundtrip
+        const promptTools = await prisma.tool.findMany({
+          where: { type: "prompt" }
         });
 
-        const match = partialTools.find((t: { id: string; title: string }) => normalizeName(t.title) === name);
-        if (!match) throw new Error("Prompt not found");
-        const tool = await prisma.tool.findUnique({ where: { id: match.id } });
+        const tool = promptTools.find((t) => normalizeName(t.title) === name);
         if (!tool) throw new Error("Prompt not found");
 
         return {

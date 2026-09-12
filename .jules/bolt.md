@@ -17,3 +17,7 @@
 ## 2026-08-18 - Removing Blocking Wait Loops in Workflow Simulation
 **Learning:** Using `await new Promise(r => setTimeout(r, ms))` within nested loops creates artificial latency proportional to the total number of items, significantly slowing down simulated pipelines or logging.
 **Action:** Remove hardcoded, artificial delays from simulation and batch state updates (e.g. `setSimLogs(prev => [...prev, ...logsForStep])`) rather than awaiting in a loop to eliminate synchronous blocking delay overhead.
+
+## 2026-08-31 - Single Query Prompt Resolution in MCP Route
+**Learning:** Performing a partial `findMany` query to match normalized string fields in memory followed by a second `findUnique` query introduces double DB roundtrip overhead. Fetching full records in a single filtered `findMany` call eliminates the extra roundtrip and reduces latency significantly.
+**Action:** When matching records by dynamically normalized or transformed fields in memory, fetch all matching records in one query and perform the in-memory lookup on the retrieved records rather than executing two sequential queries.
