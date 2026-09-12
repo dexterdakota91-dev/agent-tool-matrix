@@ -10,7 +10,7 @@ const connectionString = (process.env.DATABASE_URL_UNPOOLED || process.env.DATAB
   .replace(/^[\\\"\']+|[\\\"\']+$/g, "")
   .trim();
 
-const sql = neon(connectionString);
+const sql = connectionString ? neon(connectionString) : ((strings: TemplateStringsArray, ...values: any[]) => { throw new Error("No database connection string provided") }) as unknown as ReturnType<typeof neon>;
 
 export interface Tool {
   id: string;
@@ -185,7 +185,7 @@ export async function getWorkflows(): Promise<Workflow[]> {
       ORDER BY w."createdAt" DESC
     `;
 
-    return rows.map((w: any) => ({ // eslint-disable-line @typescript-eslint/no-explicit-any
+    return (rows as any[]).map((w: any) => ({ // eslint-disable-line @typescript-eslint/no-explicit-any
       id: w.id,
       title: w.title,
       description: w.description,
