@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import * as React from "react";
 import { useEffect, useState } from "react";
@@ -18,7 +18,7 @@ export function ClientAuthProvider({ children }: { children: React.ReactNode }) 
     };
   }, []);
 
-  if (!mounted) {
+  if (!mounted || !authClient) {
     return <>{children}</>;
   }
 
@@ -28,3 +28,4 @@ export function ClientAuthProvider({ children }: { children: React.ReactNode }) 
     </NeonAuthUIProvider>
   );
 }
+
