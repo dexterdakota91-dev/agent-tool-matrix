@@ -48,6 +48,7 @@ export function SlideOutInspector({ tool, onClose }: InspectorProps) {
               <button
                 onClick={onClose}
                 className="p-2 rounded-full bg-white/5 hover:bg-white/10 text-white transition-colors"
+                aria-label="Close inspector"
               >
                 <X className="w-5 h-5" />
               </button>

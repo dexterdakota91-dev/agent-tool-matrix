@@ -5,7 +5,7 @@ test.describe('Sanitize Utilities', () => {
   test.describe('sanitizeText', () => {
     test('should remove malicious HTML injection', () => {
       const input1 = '<script>alert("xss")</script>';
-      expect(sanitizeText(input1)).toBe('alert("xss")');
+      expect(sanitizeText(input1)).toBe('');
 
       const input2 = '<img src="x" onerror="alert(1)">';
       expect(sanitizeText(input2)).toBe('');

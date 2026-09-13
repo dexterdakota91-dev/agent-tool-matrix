@@ -182,12 +182,9 @@ async function processMcpRequest(
         if (!name) throw new Error("Missing tool name");
         const args = params?.arguments || {};
 
-        // Fetch only id and title for matching to reduce memory footprint
-        const partialTools = await prisma.tool.findMany({ select: { id: true, title: true } });
-        const match = partialTools.find((t) => normalizeName(t.title) === name);
-        if (!match) throw new Error("Tool not found");
-
-        const tool = await prisma.tool.findUnique({ where: { id: match.id } });
+        // Query tools directly in a single database roundtrip (eliminates double-query roundtrip overhead)
+        const allTools = await prisma.tool.findMany();
+        const tool = allTools.find((t) => normalizeName(t.title) === name);
         if (!tool) throw new Error("Tool not found");
 
         let responseText = tool.markdownContent || "";
