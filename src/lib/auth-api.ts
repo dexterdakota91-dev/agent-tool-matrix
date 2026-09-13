@@ -33,7 +33,12 @@ export async function getAuthContext(request: Request): Promise<{ isAuthorized: 
   }
 
   // 2. Check Local Dev Token (BOM-safe comparison)
-  const devToken = (process.env.DEV_AGENT_TOKEN || "dev_static_key_12345").replace(/^\uFEFF/, "").trim();
+  // Security Hardening: Only allow fallback to default static dev token in non-production environments (development/test).
+  // In production, DEV_AGENT_TOKEN must be explicitly set to be active.
+  const isDevOrTest = process.env.NODE_ENV === "development" || process.env.NODE_ENV === "test";
+  const defaultDevToken = isDevOrTest ? "dev_static_key_12345" : undefined;
+  const rawDevToken = process.env.DEV_AGENT_TOKEN || defaultDevToken;
+  const devToken = rawDevToken ? rawDevToken.replace(/^\uFEFF/, "").trim() : "";
   if (devToken && safeCompare(token, devToken)) {
     return { isAuthorized: true, isDevToken: true };
   }
