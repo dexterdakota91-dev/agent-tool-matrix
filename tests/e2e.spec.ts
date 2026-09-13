@@ -11,6 +11,15 @@ test.describe('Agent Tool Matrix E2E Test Suite', () => {
   test.beforeAll(async () => {
     const prismaModule = await import('../src/lib/prisma');
     prisma = prismaModule.prisma;
+    try {
+      if (prisma) {
+        await prisma.workflow.deleteMany({ where: { title: { startsWith: 'E2E Test' } } });
+        await prisma.tool.deleteMany({ where: { title: { startsWith: 'E2E Test' } } });
+        await prisma.apiKey.deleteMany({ where: { name: { startsWith: 'E2E Test' } } });
+      }
+    } catch (err) {
+      console.error('Failed to pre-clean E2E test data:', err);
+    }
   });
 
   test.afterAll(async () => {
@@ -30,9 +39,16 @@ test.describe('Agent Tool Matrix E2E Test Suite', () => {
             }
           }
         });
+        await prisma.apiKey.deleteMany({
+          where: {
+            name: {
+              startsWith: 'E2E Test'
+            }
+          }
+        });
       }
     } catch (err) {
-      console.error('Failed to cleanup E2E test tools/workflows:', err);
+      console.error('Failed to cleanup E2E test tools/workflows/apiKeys:', err);
     }
   });
 
