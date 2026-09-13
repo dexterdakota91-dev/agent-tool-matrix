@@ -75,4 +75,27 @@ test.describe('API Key Validation Unit Tests', () => {
     const result = await validateApiKey(req);
     expect(result).toBe(false);
   });
+
+  test('denies default static dev token in production environment when DEV_AGENT_TOKEN is unset', async () => {
+    const originalEnv = process.env.NODE_ENV;
+    const originalDevToken = process.env.DEV_AGENT_TOKEN;
+
+    try {
+      (process.env as Record<string, string | undefined>).NODE_ENV = 'production';
+      delete process.env.DEV_AGENT_TOKEN;
+
+      const req = new Request('http://localhost/api/test', {
+        headers: {
+          'Authorization': 'Bearer dev_static_key_12345'
+        }
+      });
+      const result = await validateApiKey(req);
+      expect(result).toBe(false);
+    } finally {
+      (process.env as Record<string, string | undefined>).NODE_ENV = originalEnv;
+      if (originalDevToken !== undefined) {
+        process.env.DEV_AGENT_TOKEN = originalDevToken;
+      }
+    }
+  });
 });
