@@ -93,7 +93,7 @@ test.describe('Search API Test Suite', () => {
     expect(Array.isArray(json.results)).toBeTruthy();
 
     // Should match tools with 'prompt' OR 'ai' tag (Tag 1 and Tag 2)
-    const titles = json.results.map((t: any) => t.title);
+    const titles = json.results.map((t: { title: string }) => t.title);
     expect(titles).toContain('Search API Test Tag 1');
     expect(titles).toContain('Search API Test Tag 2');
     expect(titles).not.toContain('Search API Test Tag 3');

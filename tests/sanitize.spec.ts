@@ -27,9 +27,9 @@ test.describe('Sanitize Utilities', () => {
 
     test('should handle empty or null inputs safely', () => {
       expect(sanitizeText('')).toBe('');
-      // Testing with any to verify runtime behavior if called from JS
-      expect(sanitizeText(null as any)).toBe('');
-      expect(sanitizeText(undefined as any)).toBe('');
+      // Testing with unknown to verify runtime behavior if called from JS
+      expect(sanitizeText(null as unknown as string)).toBe('');
+      expect(sanitizeText(undefined as unknown as string)).toBe('');
     });
   });
 
@@ -46,9 +46,9 @@ test.describe('Sanitize Utilities', () => {
     });
 
     test('should handle invalid inputs gracefully', () => {
-      expect(sanitizeTags(null as any)).toEqual([]);
-      expect(sanitizeTags(undefined as any)).toEqual([]);
-      expect(sanitizeTags("not an array" as any)).toEqual([]);
+      expect(sanitizeTags(null as unknown as string[])).toEqual([]);
+      expect(sanitizeTags(undefined as unknown as string[])).toEqual([]);
+      expect(sanitizeTags("not an array" as unknown as string[])).toEqual([]);
     });
   });
 
@@ -70,8 +70,8 @@ test.describe('Sanitize Utilities', () => {
 
     test('should handle empty or null inputs', () => {
       expect(slugify('')).toBe('');
-      expect(slugify(null as any)).toBe('');
-      expect(slugify(undefined as any)).toBe('');
+      expect(slugify(null as unknown as string)).toBe('');
+      expect(slugify(undefined as unknown as string)).toBe('');
     });
   });
 });

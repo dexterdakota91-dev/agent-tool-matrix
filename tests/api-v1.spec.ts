@@ -10,9 +10,28 @@ const authHeaders = {
 };
 
 test.describe('API v1 E2E Test Suite', () => {
-  test.describe.configure({ mode: 'serial' });
+  test.describe.configure({ timeout: 60000 });
 
-  let prisma: PrismaClient;
+  interface ApiTool {
+    id: string;
+    title: string;
+    type: string;
+    tags?: string[];
+  }
+
+  interface ApiWorkflow {
+    id: string;
+    title: string;
+    tools?: Array<{
+      tool: {
+        id: string;
+        title: string;
+        type: string;
+      };
+    }>;
+  }
+
+  let prisma: import('@prisma/client').PrismaClient;
 
   test.beforeAll(async () => {
     const prismaModule = await import('../src/lib/prisma');
@@ -86,27 +105,27 @@ test.describe('API v1 E2E Test Suite', () => {
       // Filter by type=prompt
       const promptRes = await request.get('/api/v1/tools?type=prompt', { headers: authHeaders });
       const promptJson = await promptRes.json();
-      expect(promptJson.tools.every((t: any) => t.type === 'prompt')).toBeTruthy();
-      expect(promptJson.tools.some((t: any) => t.title === 'v1 API Test Prompt')).toBeTruthy();
+      expect(promptJson.tools.every((t: ApiTool) => t.type === 'prompt')).toBeTruthy();
+      expect(promptJson.tools.some((t: ApiTool) => t.title === 'v1 API Test Prompt')).toBeTruthy();
 
       // Filter by type=skill
       const skillRes = await request.get('/api/v1/tools?type=skill', { headers: authHeaders });
       const skillJson = await skillRes.json();
-      expect(skillJson.tools.every((t: any) => t.type === 'skill')).toBeTruthy();
-      expect(skillJson.tools.some((t: any) => t.title === 'v1 API Test Skill')).toBeTruthy();
+      expect(skillJson.tools.every((t: ApiTool) => t.type === 'skill')).toBeTruthy();
+      expect(skillJson.tools.some((t: ApiTool) => t.title === 'v1 API Test Skill')).toBeTruthy();
 
       // Filter by type=mcp
       const mcpRes = await request.get('/api/v1/tools?type=mcp', { headers: authHeaders });
       const mcpJson = await mcpRes.json();
-      expect(mcpJson.tools.every((t: any) => t.type === 'mcp')).toBeTruthy();
-      expect(mcpJson.tools.some((t: any) => t.title === 'v1 API Test MCP')).toBeTruthy();
+      expect(mcpJson.tools.every((t: ApiTool) => t.type === 'mcp')).toBeTruthy();
+      expect(mcpJson.tools.some((t: ApiTool) => t.title === 'v1 API Test MCP')).toBeTruthy();
 
       // Filter by tag=tagA
       const tagARes = await request.get('/api/v1/tools?tag=tagA', { headers: authHeaders });
       const tagAJson = await tagARes.json();
-      expect(tagAJson.tools.some((t: any) => t.title === 'v1 API Test Prompt')).toBeTruthy();
-      expect(tagAJson.tools.some((t: any) => t.title === 'v1 API Test MCP')).toBeTruthy();
-      expect(tagAJson.tools.some((t: any) => t.title === 'v1 API Test Skill')).toBeFalsy();
+      expect(tagAJson.tools.some((t: ApiTool) => t.title === 'v1 API Test Prompt')).toBeTruthy();
+      expect(tagAJson.tools.some((t: ApiTool) => t.title === 'v1 API Test MCP')).toBeTruthy();
+      expect(tagAJson.tools.some((t: ApiTool) => t.title === 'v1 API Test Skill')).toBeFalsy();
     });
   });
 
@@ -151,7 +170,7 @@ test.describe('API v1 E2E Test Suite', () => {
       // Verify persisted in DB
       const getRes = await request.get('/api/v1/tools', { headers: authHeaders });
       const getJson = await getRes.json();
-      expect(getJson.tools.some((t: any) => t.id === json.tool.id)).toBeTruthy();
+      expect(getJson.tools.some((t: ApiTool) => t.id === json.tool.id)).toBeTruthy();
     });
   });
 
@@ -182,11 +201,11 @@ test.describe('API v1 E2E Test Suite', () => {
       const json = await response.json();
       expect(Array.isArray(json.workflows)).toBeTruthy();
 
-      const wf = json.workflows.find((w: any) => w.title === 'v1 API Test Workflow GET');
+      const wf = json.workflows.find((w: ApiWorkflow) => w.title === 'v1 API Test Workflow GET');
       expect(wf).toBeDefined();
-      expect(wf.tools).toBeDefined();
-      expect(Array.isArray(wf.tools)).toBeTruthy();
-      expect(wf.tools[0].tool.title).toBe('v1 API Test Tool for Workflow GET');
+      expect(wf?.tools).toBeDefined();
+      expect(Array.isArray(wf?.tools)).toBeTruthy();
+      expect(wf?.tools?.[0]?.tool.title).toBe('v1 API Test Tool for Workflow GET');
     });
   });
 

@@ -9,4 +9,4 @@ const connectionString = process.env.DATABASE_URL
   .replace(/^[\\\"\']+|[\\\"\']+$/g, "")
   .trim();
 
-export const sql = connectionString ? neon(connectionString) : ((strings: TemplateStringsArray, ...values: any[]) => { throw new Error("No database connection string provided") }) as unknown as ReturnType<typeof neon>;
+export const sql = connectionString ? neon(connectionString) : ((strings: TemplateStringsArray, ...values: unknown[]) => { throw new Error("No database connection string provided") }) as unknown as ReturnType<typeof neon>;

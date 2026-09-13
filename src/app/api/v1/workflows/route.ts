@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 import { validateApiKey } from "@/lib/auth-api";
 
 export async function GET(request: Request) {
@@ -60,7 +61,7 @@ export async function POST(request: Request) {
       }
     });
 
-    const existingIds = new Set(existingTools.map((t: any) => t.id)); // eslint-disable-line @typescript-eslint/no-explicit-any
+    const existingIds = new Set(existingTools.map(t => t.id));
     const allExist = toolIds.every(id => existingIds.has(id));
 
     if (!allExist) {
@@ -68,7 +69,7 @@ export async function POST(request: Request) {
     }
 
     // Create workflow and link tools within a transaction
-    const newWorkflow = await prisma.$transaction(async (tx: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
+    const newWorkflow = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       const wf = await tx.workflow.create({
         data: {
           title,

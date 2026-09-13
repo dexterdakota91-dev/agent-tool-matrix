@@ -1,6 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 import { neon } from "@neondatabase/serverless";
 import crypto from "crypto";
 
@@ -10,7 +11,7 @@ const connectionString = (process.env.DATABASE_URL_UNPOOLED || process.env.DATAB
   .replace(/^[\\\"\']+|[\\\"\']+$/g, "")
   .trim();
 
-const sql = connectionString ? neon(connectionString) : ((strings: TemplateStringsArray, ...values: any[]) => { throw new Error("No database connection string provided") }) as unknown as ReturnType<typeof neon>;
+const sql = connectionString ? neon(connectionString) : ((strings: TemplateStringsArray, ...values: unknown[]) => { throw new Error("No database connection string provided") }) as unknown as ReturnType<typeof neon>;
 
 export interface Tool {
   id: string;
@@ -161,9 +162,18 @@ export async function deleteTool(id: string): Promise<{ success: boolean }> {
   }
 }
 
+interface WorkflowSqlRow {
+  id: string;
+  title: string;
+  description: string | null;
+  createdAt: string | Date;
+  updatedAt: string | Date;
+  tools: WorkflowTool[] | string;
+}
+
 export async function getWorkflows(): Promise<Workflow[]> {
   try {
-    const rows = await sql`
+    const rows = (await sql`
       SELECT 
         w.id, w.title, w.description, w."createdAt", w."updatedAt",
         COALESCE(
@@ -183,9 +193,9 @@ export async function getWorkflows(): Promise<Workflow[]> {
       LEFT JOIN tools t ON wt."toolId" = t.id
       GROUP BY w.id
       ORDER BY w."createdAt" DESC
-    `;
+    `) as unknown as WorkflowSqlRow[];
 
-    return (rows as any[]).map((w: any) => ({ // eslint-disable-line @typescript-eslint/no-explicit-any
+    return rows.map((w) => ({
       id: w.id,
       title: w.title,
       description: w.description,
@@ -208,13 +218,13 @@ export async function getWorkflows(): Promise<Workflow[]> {
         orderBy: { createdAt: "desc" }
       });
 
-      return workflows.map((w: any) => ({ // eslint-disable-line @typescript-eslint/no-explicit-any
+      return workflows.map((w) => ({
         id: w.id,
         title: w.title,
         description: w.description,
         createdAt: w.createdAt.toISOString(),
         updatedAt: w.updatedAt.toISOString(),
-        tools: w.tools.map((wt: any) => ({ // eslint-disable-line @typescript-eslint/no-explicit-any
+        tools: w.tools.map((wt) => ({
           workflowId: wt.workflowId,
           toolId: wt.toolId,
           stepOrder: wt.stepOrder,
@@ -235,7 +245,7 @@ export async function createWorkflow(data: {
   toolIds: string[];
 }): Promise<Workflow | null> {
   try {
-    const newWorkflow = await prisma.$transaction(async (tx: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
+    const newWorkflow = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       const wf = await tx.workflow.create({
         data: {
           title: data.title,

@@ -37,7 +37,7 @@ test.describe('Export Utilities', () => {
     });
 
     test('should throw an error for data with circular references', () => {
-      const obj: any = {};
+      const obj: Record<string, unknown> = {};
       obj.circular = obj;
       expect(() => exportToJson(obj)).toThrow('Failed to serialize data to JSON:');
     });
@@ -168,27 +168,27 @@ test.describe('Export Utilities', () => {
     });
 
     test('should throw an error for invalid workflow data', () => {
-      expect(() => exportToMarkdown(undefined as any)).toThrow('Invalid workflow data: must be an object.');
-      expect(() => exportToMarkdown(null as any)).toThrow('Invalid workflow data: must be an object.');
-      expect(() => exportToMarkdown('string' as any)).toThrow('Invalid workflow data: must be an object.');
+      expect(() => exportToMarkdown(undefined as unknown as WorkflowData)).toThrow('Invalid workflow data: must be an object.');
+      expect(() => exportToMarkdown(null as unknown as WorkflowData)).toThrow('Invalid workflow data: must be an object.');
+      expect(() => exportToMarkdown('string' as unknown as WorkflowData)).toThrow('Invalid workflow data: must be an object.');
     });
 
     test('should throw an error for missing or invalid name', () => {
-      expect(() => exportToMarkdown({ steps: [] } as any)).toThrow("Invalid workflow data: 'name' must be a non-empty string.");
-      expect(() => exportToMarkdown({ name: '', steps: [] } as any)).toThrow("Invalid workflow data: 'name' must be a non-empty string.");
-      expect(() => exportToMarkdown({ name: '   ', steps: [] } as any)).toThrow("Invalid workflow data: 'name' must be a non-empty string.");
-      expect(() => exportToMarkdown({ name: 123, steps: [] } as any)).toThrow("Invalid workflow data: 'name' must be a non-empty string.");
+      expect(() => exportToMarkdown({ steps: [] } as unknown as WorkflowData)).toThrow("Invalid workflow data: 'name' must be a non-empty string.");
+      expect(() => exportToMarkdown({ name: '', steps: [] } as unknown as WorkflowData)).toThrow("Invalid workflow data: 'name' must be a non-empty string.");
+      expect(() => exportToMarkdown({ name: '   ', steps: [] } as unknown as WorkflowData)).toThrow("Invalid workflow data: 'name' must be a non-empty string.");
+      expect(() => exportToMarkdown({ name: 123, steps: [] } as unknown as WorkflowData)).toThrow("Invalid workflow data: 'name' must be a non-empty string.");
     });
 
     test('should throw an error for missing or invalid steps', () => {
-      expect(() => exportToMarkdown({ name: 'Valid Name' } as any)).toThrow("Invalid workflow data: 'steps' must be an array.");
-      expect(() => exportToMarkdown({ name: 'Valid Name', steps: 'not_an_array' } as any)).toThrow("Invalid workflow data: 'steps' must be an array.");
+      expect(() => exportToMarkdown({ name: 'Valid Name' } as unknown as WorkflowData)).toThrow("Invalid workflow data: 'steps' must be an array.");
+      expect(() => exportToMarkdown({ name: 'Valid Name', steps: 'not_an_array' } as unknown as WorkflowData)).toThrow("Invalid workflow data: 'steps' must be an array.");
     });
 
     test('should throw an error for invalid step objects', () => {
-      expect(() => exportToMarkdown({ name: 'Valid Name', steps: [null] } as any)).toThrow('Invalid workflow step at index 0: must be an object.');
-      expect(() => exportToMarkdown({ name: 'Valid Name', steps: [{ tool: 'valid_tool' }] } as any)).toThrow("Invalid workflow step at index 0: 'name' must be a string.");
-      expect(() => exportToMarkdown({ name: 'Valid Name', steps: [{ name: 'valid_name' }] } as any)).toThrow("Invalid workflow step at index 0: 'tool' must be a string.");
+      expect(() => exportToMarkdown({ name: 'Valid Name', steps: [null] } as unknown as WorkflowData)).toThrow('Invalid workflow step at index 0: must be an object.');
+      expect(() => exportToMarkdown({ name: 'Valid Name', steps: [{ tool: 'valid_tool' }] } as unknown as WorkflowData)).toThrow("Invalid workflow step at index 0: 'name' must be a string.");
+      expect(() => exportToMarkdown({ name: 'Valid Name', steps: [{ name: 'valid_name' }] } as unknown as WorkflowData)).toThrow("Invalid workflow step at index 0: 'tool' must be a string.");
     });
   });
 });
