@@ -223,6 +223,8 @@ export function SettingsTab({
                   <button
                     onClick={() => handleRevokeApiKey(key.id)}
                     disabled={userRole !== "Admin"}
+                    aria-label={`Revoke ${key.name}`}
+                    title="Revoke API Key"
                     className="p-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 disabled:opacity-30 disabled:hover:bg-red-500/10 transition"
                   >
                     <Trash2 className="w-3.5 h-3.5" />

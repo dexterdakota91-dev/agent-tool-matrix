@@ -1,3 +1,6 @@
+import { loadEnvConfig } from '@next/env';
+loadEnvConfig(process.cwd());
+
 import { defineConfig, devices } from '@playwright/test';
 
 const hasDatabase = Boolean(process.env.DATABASE_URL || process.env.DATABASE_URL_UNPOOLED);

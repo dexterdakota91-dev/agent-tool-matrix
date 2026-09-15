@@ -29,7 +29,9 @@ export interface RateLimitResult {
  * @param options - Configuration options for the rate limiter.
  * @returns An object containing the check function.
  */
-export function rateLimit(options: RateLimitOptions) {
+const directLimiterCache = new Map<number, ReturnType<typeof createRateLimiter>>();
+
+function createRateLimiter(options: RateLimitOptions) {
   const tokenCache = new Map<string, number[]>();
   let lastSweep = Date.now();
   const interval = options.interval;
@@ -96,4 +98,25 @@ export function rateLimit(options: RateLimitOptions) {
       });
     },
   };
+}
+
+export function rateLimit(options: RateLimitOptions): { check: (limit: number, token: string) => Promise<RateLimitResult> };
+export function rateLimit(token: string, limit: number, windowMs: number): Promise<boolean>;
+export function rateLimit(
+  optionsOrToken: RateLimitOptions | string,
+  limit?: number,
+  windowMs?: number
+): { check: (limit: number, token: string) => Promise<RateLimitResult> } | Promise<boolean> {
+  if (typeof optionsOrToken === "string") {
+    const token = optionsOrToken;
+    const l = limit ?? 10;
+    const interval = windowMs ?? 1000;
+    let limiter = directLimiterCache.get(interval);
+    if (!limiter) {
+      limiter = createRateLimiter({ interval });
+      directLimiterCache.set(interval, limiter);
+    }
+    return limiter.check(l, token).then((res) => res.success);
+  }
+  return createRateLimiter(optionsOrToken);
 }

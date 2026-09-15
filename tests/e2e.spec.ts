@@ -150,7 +150,7 @@ test.describe('Agent Tool Matrix E2E Test Suite', () => {
   test('Workflow execution simulator runs successfully', async ({ page }) => {
     test.setTimeout(60000);
     // Go to Workflows tab
-    const workflowsTab = page.getByRole('button', { name: 'Workflows' });
+    const workflowsTab = page.getByRole('button', { name: 'Workflows' }).first();
     await workflowsTab.click();
 
     // Select the first workflow
@@ -253,15 +253,14 @@ test.describe('Agent Tool Matrix E2E Test Suite', () => {
     await expect(keyInList).toBeVisible();
 
     // 7. Revoke/delete the generated key
-    // Locate the row containing testKeyName and click the delete button inside it
-    const row = page.locator('div', { has: page.locator('div', { hasText: testKeyName }) }).locator('button').first();
-    await expect(row).toBeVisible();
+    const deleteBtn = page.getByRole('button', { name: `Revoke ${testKeyName}` });
+    await expect(deleteBtn).toBeVisible();
 
     // Register a dialog handler to accept the confirm dialog
     page.once('dialog', async dialog => {
       await dialog.accept();
     });
-    await row.click();
+    await deleteBtn.click();
 
     // Wait for the loader / synchronization to finish
     await expect(page.getByText('Syncing with Neon cluster...')).toBeHidden({ timeout: 25000 });
