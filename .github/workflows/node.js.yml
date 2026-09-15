@@ -27,6 +27,16 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
     - run: npm ci
-    - run: npm run build --if-present
-    - run: npx playwright install --with-deps
-    - run: npm test
+    - name: Build Application
+      env:
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        DATABASE_URL_UNPOOLED: ${{ secrets.DATABASE_URL_UNPOOLED }}
+      run: npm run build --if-present
+    - name: Install Playwright Browsers
+      run: npx playwright install --with-deps chromium
+    - name: Run Tests
+      env:
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        DATABASE_URL_UNPOOLED: ${{ secrets.DATABASE_URL_UNPOOLED }}
+        DEV_AGENT_TOKEN: "dev_static_key_12345"
+      run: npm test

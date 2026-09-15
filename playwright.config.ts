@@ -1,7 +1,21 @@
 import { defineConfig, devices } from '@playwright/test';
 
+const hasDatabase = Boolean(process.env.DATABASE_URL || process.env.DATABASE_URL_UNPOOLED);
+
 export default defineConfig({
   testDir: './tests',
+  testMatch: hasDatabase
+    ? '**/*.spec.ts'
+    : [
+        '**/auth.spec.ts',
+        '**/constants.spec.ts',
+        '**/export-utils.spec.ts',
+        '**/formatters.spec.ts',
+        '**/openapi.spec.ts',
+        '**/rate-limit.spec.ts',
+        '**/sanitize.spec.ts',
+        '**/useCanvasStore.spec.ts',
+      ],
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
@@ -19,10 +33,12 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
   ],
-  webServer: {
-    command: 'npm run dev',
-    url: 'http://localhost:3000',
-    reuseExistingServer: !process.env.CI,
-    timeout: 120000,
-  },
+  webServer: hasDatabase
+    ? {
+        command: process.env.CI ? 'npm run start' : 'npm run dev',
+        url: 'http://localhost:3000',
+        reuseExistingServer: !process.env.CI,
+        timeout: 120000,
+      }
+    : undefined,
 });
