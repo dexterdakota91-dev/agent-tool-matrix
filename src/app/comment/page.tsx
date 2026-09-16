@@ -5,6 +5,8 @@ import CommentForm from "@/components/CommentForm";
 
 import { Comment } from "@prisma/client";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "Feedback & Discussions - ATM",
   description: "Share feedback or discussions on the Agent Tool Matrix.",

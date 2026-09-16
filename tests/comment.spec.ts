@@ -55,19 +55,11 @@ test.describe('Agent Tool Matrix Comment & Feedback Flow', () => {
 
     const textarea = page.locator('textarea#comment');
     await textarea.fill(commentText);
-    await textarea.pressSequentially(commentText, { delay: 10 });
 
-
-
-
-    // Verify button is now enabled
+    // Verify submit button is enabled and click
     const submitBtn = page.getByRole('button', { name: 'Submit Comment' });
-    await submitBtn.waitFor({ state: "visible" });
-    await page.waitForTimeout(500);
-    await submitBtn.evaluate((node: HTMLButtonElement) => { node.disabled = false; });
+    await expect(submitBtn).toBeVisible();
     await expect(submitBtn).toBeEnabled({ timeout: 10000 });
-
-    // Click submit
     await submitBtn.click();
 
     // Verify success alert appears
@@ -76,6 +68,6 @@ test.describe('Agent Tool Matrix Comment & Feedback Flow', () => {
 
     // Verify the comment is rendered in the recent activity list
     const commentCard = page.getByText(commentText);
-    await expect(commentCard).toBeVisible();
+    await expect(commentCard).toBeVisible({ timeout: 15000 });
   });
 });

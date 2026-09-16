@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
 import { neon } from "@neondatabase/serverless";
+import { revalidatePath } from "next/cache";
 import crypto from "crypto";
 
 const connectionString = (process.env.DATABASE_URL_UNPOOLED || process.env.DATABASE_URL || "")
@@ -406,6 +407,7 @@ export async function createComment(content: string): Promise<boolean> {
         content,
       }
     });
+    revalidatePath("/comment");
     return true;
   } catch (error) {
     console.error("Failed to create comment:", error);
